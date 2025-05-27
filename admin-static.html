@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Statistics - LuxeVista</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        :root {
+      --primary: #1a3c40;
+      --secondary: #2c666e;
+      --accent: #f0b67f;
+      --light: #f7f9f9;
+      --gold: #d4af37;
+      --dark-text: #333;
+      --sidebar-width: 240px;
+    }
+    
+    body {
+      background: linear-gradient(135deg, rgba(26, 60, 64, 0.05), rgba(44, 102, 110, 0.05));
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--dark-text);
+      margin: 0;
+      min-height: 100vh;
+    }
+    
+    /* Logo styling */
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2rem;
+      padding: 1rem 0.5rem;
+    }
+    
+    .logo {
+      max-width: 80%;
+      height: auto;
+    }
+    
+    /* Sidebar styling */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      width: var(--sidebar-width);
+      background: linear-gradient(180deg, var(--primary), var(--secondary));
+      padding: 20px 0;
+      color: white;
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .sidebar-item {
+      margin: 8px 20px;
+    }
+    
+    .sidebar-link {
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+    
+    .sidebar-link:hover,
+    .sidebar-link.active {
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+    
+    .sidebar-link.active {
+      background: linear-gradient(90deg, var(--accent), var(--gold));
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+    }
+    
+    .sidebar-icon {
+      margin-right: 12px;
+      width: 20px;
+      text-align: center;
+    }
+    .main-content {
+      margin-left: var(--sidebar-width);
+      padding: 30px;
+      transition: all 0.3s ease;
+    }
+        .page-header {
+            color: var(--primary);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--accent);
+        }
+        .page-header h1 { font-size: 2.5rem; font-weight: 700; }
+        .chart-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+            margin-bottom: 30px; 
+            height: 380px; /* Adjust this value as needed for desired chart height */
+            display: flex; /* For centering canvas if smaller */
+            flex-direction: column; /* Stack title and canvas */
+            align-items: center; /* Center canvas horizontally */
+        }
+        .chart-container h5 {
+            color: var(--secondary);
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .filter-controls {
+            margin-bottom: 15px;
+            width: 100%; /* Ensure filter controls take full width of their column */
+        }
+        .chart-container canvas {
+            max-width: 100%; /* Ensure canvas is responsive */
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="animate__animated animate__fadeInDown"><i class="fas fa-chart-line"></i> System Statistics</h1>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="chart-container">
+                    <h5>Room Availability</h5>
+                    <canvas id="roomAvailabilityChart"></canvas>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="chart-container">
+                    <h5>Booking Overview</h5>
+                    <canvas id="bookingCancellationChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12 mb-4">
+                <div class="chart-container">
+                    <h5>Monthly User Registrations (Last 12 Months)</h5>
+                    <div class="filter-controls row justify-content-center gx-2">
+                        <div class="col-auto">
+                            <select id="userRegYearFilter" class="form-select form-select-sm">
+                                <option value="">Last 12 Months</option>
+                                <!-- Years will be populated by JS -->
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <button id="applyUserRegFilter" class="btn btn-primary btn-sm">Apply</button>
+                        </div>
+                    </div>
+                    <canvas id="monthlyUserRegistrationChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-12 mb-4">
+                <div class="chart-container">
+                    <h5>Monthly Bookings (Last 12 Months)</h5>
+                    <div class="filter-controls row justify-content-center gx-2">
+                        <div class="col-auto">
+                            <select id="bookingYearFilter" class="form-select form-select-sm">
+                                <option value="">Last 12 Months</option>
+                                <!-- Years will be populated by JS -->
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <button id="applyBookingFilter" class="btn btn-primary btn-sm">Apply</button>
+                        </div>
+                    </div>
+                    <canvas id="monthlyBookingChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chartErrorMsg = '<p class="text-danger text-center small mt-3">Could not load chart data.</p>';
+        let userRegChartInstance = null;
+        let bookingChartInstance = null;
+
+        function populateYearFilters() {
+            const currentYear = new Date().getFullYear();
+            const yearFilters = [document.getElementById('userRegYearFilter'), document.getElementById('bookingYearFilter')];
+            yearFilters.forEach(selectElement => {
+                if (!selectElement) return;
+                for (let i = 0; i < 5; i++) { // Last 5 years + current year
+                    const year = currentYear - i;
+                    const option = new Option(year, year);
+                    selectElement.add(option);
+                }
+            });
+        }
+        populateYearFilters();
+
+        // 1. Room Availability Chart (Pie Chart)
+        fetch('php/get_room_availability_stats.php')
+            .then(response => response.json())
+            .then(data => {
+                const chartElement = document.getElementById('roomAvailabilityChart');
+                if (data.status === 'success' && chartElement) {
+                    const ctx = chartElement.getContext('2d');
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: ['Available', 'Not Available'],
+                            datasets: [{
+                                label: 'Room Status',
+                                data: [data.data.Available, data.data['Not Available']],
+                                backgroundColor: ['rgba(46, 204, 113, 0.7)', 'rgba(231, 76, 60, 0.7)'],
+                                borderColor: ['rgba(46, 204, 113, 1)', 'rgba(231, 76, 60, 1)'],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
+                    });
+                } else {
+                    console.error("Failed to load room availability stats:", data.message);
+                    if(chartElement) chartElement.parentElement.insertAdjacentHTML('beforeend', chartErrorMsg);
+                }
+            }).catch(err => {
+                 console.error("Error fetching room availability stats:", err);
+                 const chartElement = document.getElementById('roomAvailabilityChart');
+                 if(chartElement) chartElement.parentElement.insertAdjacentHTML('beforeend', chartErrorMsg);
+            });
+
+        // 2. Monthly User Registration Chart (Bar Chart)
+        function loadUserRegistrationChart(year = '') {
+            let url = 'php/get_monthly_user_registration_stats.php';
+            if (year) {
+                url += `?year=${year}`;
+            }
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const chartElement = document.getElementById('monthlyUserRegistrationChart');
+                    if (data.status === 'success' && chartElement) {
+                        const labels = data.data.map(item => item.month_year);
+                        const counts = data.data.map(item => item.count);
+                        const ctx = chartElement.getContext('2d');
+                        if (userRegChartInstance) {
+                            userRegChartInstance.destroy();
+                        }
+                        userRegChartInstance = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'User Registrations',
+                                    data: counts,
+                                    backgroundColor: 'rgba(44, 102, 110, 0.7)', // var(--secondary)
+                                    borderColor: 'rgba(44, 102, 110, 1)',
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+                        });
+                    } else {
+                        console.error("Failed to load monthly user registration stats:", data.message);
+                         if(chartElement) chartElement.parentElement.insertAdjacentHTML('beforeend', chartErrorMsg);
+                    }
+                }).catch(err => {
+                    console.error("Error fetching monthly user registration stats:", err);
+                    const chartElement = document.getElementById('monthlyUserRegistrationChart');
+                    if(chartElement) chartElement.parentElement.insertAdjacentHTML('beforeend', chartErrorMsg);
+                });
+        }
+        loadUserRegistrationChart(); // Initial load
+        document.getElementById('applyUserRegFilter').addEventListener('click', () => {
+            const selectedYear = document.getElementById('userRegYearFilter').value;
+            loadUserRegistrationChart(selectedYear);
+        });
+
+        // 3. Monthly Booking Chart (Bar Chart)
+        function loadBookingChart(year = '') {
+            let url = 'php/get_monthly_booking_stats.php';
+            if (year) {
+                url += `?year=${year}`;
+            }
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const chartElement = document.getElementById('monthlyBookingChart');
+                    if (data.status === 'success' && chartElement) {
+                        const labels = data.data.map(item => item.month_year);
+                        const counts = data.data.map(item => item.count);
+                        const ctx = chartElement.getContext('2d');
+                        if (bookingChartInstance) {
+                            bookingChartInstance.destroy();
+                        }
+                        bookingChartInstance = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Bookings Made',
+                                    data: counts,
+                                    backgroundColor: 'rgba(240, 182, 127, 0.7)', // var(--accent)
+                                    borderColor: 'rgba(240, 182, 127, 1)',
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+                        });
+                    } else {
+                        console.error("Failed to load monthly booking stats:", data.message);
+                        if(chartElement) chartElement.parentElement.insertAdjacentHTML('beforeend', chartErrorMsg);
+                    }
+                }).catch(err => {
+                    console.error("Error fetching monthly booking stats:", err);
+                    const chartElement = document.getElementById('monthlyBookingChart');
+                    if(chartElement) chartElement.parentElement.insertAdjacentHTML('beforeend', chartErrorMsg);
+                });
+        }
+        loadBookingChart(); // Initial load
+        document.getElementById('applyBookingFilter').addEventListener('click', () => {
+            const selectedYear = document.getElementById('bookingYearFilter').value;
+            loadBookingChart(selectedYear);
+        });
+
+        // 4. Booking Cancellation/Status Chart (Pie Chart)
+        fetch('php/get_booking_cancellation_stats.php')
+            .then(response => response.json())
+            .then(data => {
+                const chartElement = document.getElementById('bookingCancellationChart');
+                if (data.status === 'success' && chartElement) {
+                    const ctx = chartElement.getContext('2d');
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: ['Confirmed', 'Cancelled', 'Other Statuses'],
+                            datasets: [{
+                                label: 'Booking Statuses',
+                                data: [data.data.confirmed, data.data.cancelled, data.data.other],
+                                backgroundColor: [ 'rgba(75, 192, 192, 0.7)', 'rgba(255, 99, 132, 0.7)', 'rgba(201, 203, 207, 0.7)' ],
+                                borderColor: [ 'rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)', 'rgba(201, 203, 207, 1)' ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: { 
+                            responsive: true, 
+                            maintainAspectRatio: false, 
+                            plugins: { 
+                                legend: { position: 'top' },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            let label = context.label || '';
+                                            if (label) { label += ': '; }
+                                            if (context.parsed !== null) { label += context.parsed; }
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = total > 0 ? ((context.parsed / total) * 100).toFixed(1) + '%' : '0%';
+                                            label += ' (' + percentage + ')';
+                                            return label;
+                                        }
+                                    }
+                                }
+                            } 
+                        }
+                    });
+                } else {
+                    console.error("Failed to load booking cancellation stats:", data.message);
+                    if(chartElement) chartElement.parentElement.insertAdjacentHTML('beforeend', chartErrorMsg);
+                }
+            }).catch(err => {
+                console.error("Error fetching booking cancellation stats:", err);
+                const chartElement = document.getElementById('bookingCancellationChart');
+                if(chartElement) chartElement.parentElement.insertAdjacentHTML('beforeend', chartErrorMsg);
+            });
+    });
+    </script>
+</body>
+</html>

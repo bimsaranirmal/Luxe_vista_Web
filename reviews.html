@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Customer Reviews - LuxeVista Admin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        :root {
+      --primary: #1a3c40;
+      --secondary: #2c666e;
+      --accent: #f0b67f;
+      --light: #f7f9f9;
+      --gold: #d4af37;
+      --dark-text: #333;
+      --sidebar-width: 240px;
+    }
+    
+    body {
+      background: linear-gradient(135deg, rgba(26, 60, 64, 0.05), rgba(44, 102, 110, 0.05));
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--dark-text);
+      margin: 0;
+      min-height: 100vh;
+    }
+    
+    /* Logo styling */
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2rem;
+      padding: 1rem 0.5rem;
+    }
+    
+    .logo {
+      max-width: 80%;
+      height: auto;
+    }
+    
+    /* Sidebar styling */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      width: var(--sidebar-width);
+      background: linear-gradient(180deg, var(--primary), var(--secondary));
+      padding: 20px 0;
+      color: white;
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .sidebar-item {
+      margin: 8px 20px;
+    }
+    
+    .sidebar-link {
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+    
+    .sidebar-link:hover,
+    .sidebar-link.active {
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+    
+    .sidebar-link.active {
+      background: linear-gradient(90deg, var(--accent), var(--gold));
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+    }
+    
+    .sidebar-icon {
+      margin-right: 12px;
+      width: 20px;
+      text-align: center;
+    }
+    .main-content {
+      margin-left: var(--sidebar-width);
+      padding: 30px;
+      transition: all 0.3s ease;
+    }
+        .page-header {
+            color: var(--primary);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--accent);
+        }
+        .page-header h1 { font-size: 2.5rem; font-weight: 700; }
+        
+        .review-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+            margin-bottom: 20px;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .review-card .card-header {
+            background-color: var(--secondary);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.25rem;
+        }
+        .review-card .card-body {
+            padding: 1.25rem;
+        }
+        .review-card .card-body p { margin-bottom: 0.5rem; }
+        .review-card .review-rating .fa-star { color: var(--gold); }
+        .review-card .review-text {
+            color: #555;
+            line-height: 1.6;
+            margin-top: 10px;
+            white-space: pre-wrap; /* Preserve line breaks from review text */
+        }
+        .review-card .card-footer {
+            background-color: #f8f9fa;
+            font-size: 0.85em;
+            color: #6c757d;
+            padding: 0.75rem 1.25rem;
+        }
+        .no-reviews {
+            text-align: center;
+            padding: 50px;
+            background-color: #fff;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+    <div class="container-fluid">
+        <div class="page-header">
+            <h1 class="animate__animated animate__fadeInDown"><i class="fas fa-star-half-alt"></i> Customer Reviews</h1>
+        </div>
+
+        <div id="reviewsContainer" class="row">
+            <!-- Reviews will be loaded here -->
+            <p class="text-center">Loading reviews...</p>
+        </div>
+    </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const reviewsContainer = document.getElementById('reviewsContainer');
+
+            fetch('php/get_all_reviews.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success' && data.reviews) {
+                        if (data.reviews.length > 0) {
+                            renderReviews(data.reviews);
+                        } else {
+                            reviewsContainer.innerHTML = `
+                                <div class="col-12">
+                                    <div class="no-reviews animate__animated animate__fadeIn">
+                                        <i class="fas fa-comment-slash fa-3x mb-3"></i>
+                                        <h4>No Reviews Yet</h4>
+                                        <p>There are currently no customer reviews in the system.</p>
+                                    </div>
+                                </div>`;
+                        }
+                    } else {
+                        reviewsContainer.innerHTML = `<div class="alert alert-danger col-12">${data.message || 'Could not load reviews.'}</div>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching all reviews:', error);
+                    reviewsContainer.innerHTML = '<div class="alert alert-danger col-12">An error occurred while fetching reviews. Please try again later.</div>';
+                });
+
+            function renderReviews(reviews) {
+                reviewsContainer.innerHTML = ''; // Clear loading message
+                reviews.forEach(review => {
+                    let starsHtml = '';
+                    for (let i = 1; i <= 5; i++) { // Corrected loop start from 1 for 1-5 stars
+                        starsHtml += `<i class="fa-star ${i <= review.rating ? 'fas' : 'far'}"></i>`;
+                    }
+
+                    const reviewDate = new Date(review.created_at).toLocaleDateString('en-US', {
+                        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                    });
+
+                    const reviewCardHtml = `
+                        <div class="col-md-6 col-lg-4 mb-4 animate__animated animate__fadeInUp"> <!-- Added animation class -->
+                            <div class="card review-card h-100">
+                                <div class="card-header">
+                                    Review by: <strong>${review.guest_name.replace(/</g, "&lt;")}</strong>
+                                </div>
+                                <div class="card-body">
+                                    <div class="review-rating mb-2">${starsHtml} (${review.rating}/5)</div>
+                                    <p class="review-text">${review.review_text.replace(/</g, "&lt;").replace(/\\n/g, "<br>")}</p>
+                                </div>
+                                <div class="card-footer text-muted">
+                                    Submitted: ${reviewDate}
+                                </div>
+                            </div>
+                        </div>`;
+                    reviewsContainer.insertAdjacentHTML('beforeend', reviewCardHtml);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

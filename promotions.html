@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Promotions - LuxeVista Admin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        :root {
+      --primary: #1a3c40;
+      --secondary: #2c666e;
+      --accent: #f0b67f;
+      --light: #f7f9f9;
+      --gold: #d4af37;
+      --dark-text: #333;
+      --sidebar-width: 240px;
+    }
+    
+    body {
+      background: linear-gradient(135deg, rgba(26, 60, 64, 0.05), rgba(44, 102, 110, 0.05));
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--dark-text);
+      margin: 0;
+      min-height: 100vh;
+    }
+    
+    /* Logo styling */
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2rem;
+      padding: 1rem 0.5rem;
+    }
+    
+    .logo {
+      max-width: 80%;
+      height: auto;
+    }
+    
+    /* Sidebar styling */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      width: var(--sidebar-width);
+      background: linear-gradient(180deg, var(--primary), var(--secondary));
+      padding: 20px 0;
+      color: white;
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .sidebar-item {
+      margin: 8px 20px;
+    }
+    
+    .sidebar-link {
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+    
+    .sidebar-link:hover,
+    .sidebar-link.active {
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+    
+    .sidebar-link.active {
+      background: linear-gradient(90deg, var(--accent), var(--gold));
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+    }
+    
+    .sidebar-icon {
+      margin-right: 12px;
+      width: 20px;
+      text-align: center;
+    }
+    .main-content {
+      margin-left: var(--sidebar-width);
+      padding: 30px;
+      transition: all 0.3s ease;
+    }
+        .page-header {
+            color: var(--primary);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--accent);
+        }
+        .page-header h1 { font-size: 2.5rem; font-weight: 700; }
+        .form-card {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            padding: 25px 30px;
+            margin-bottom: 40px;
+        }
+        .form-label { font-weight: bold; color: var(--secondary); margin-bottom: 0.5rem; }
+        .btn-primary { background-color: var(--accent); border-color: var(--accent); color: var(--primary); }
+        .btn-primary:hover { background-color: var(--gold); border-color: var(--gold); color: var(--primary); }
+        .form-text { font-size: 0.875em; }
+
+        /* Styles for Promotions List */
+        .promotions-list-section {
+            margin-top: 50px;
+        }
+        .promotion-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+            margin-bottom: 20px;
+            border: 1px solid #eee;
+        }
+        .promotion-card .card-header {
+            background-color: var(--secondary);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.25rem;
+        }
+        .promotion-card .card-body {
+            padding: 1.25rem;
+        }
+        .promotion-card .card-footer {
+            background-color: #f8f9fa;
+            font-size: 0.85em;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+    <div class="container-fluid main-content-wrapper animate__animated animate__fadeIn">
+        <div class="page-header">
+            <h1 class="animate__animated animate__fadeInDown"><i class="fas fa-tags"></i> Manage Promotions</h1>
+        </div>
+
+        <div class="form-card">
+            <h3><i class="fas fa-plus-circle"></i> Add New Promotion</h3>
+            <hr>
+            <form id="addPromotionForm">
+                <div class="mb-3">
+                    <label for="promoTitle" class="form-label">Promotion Title</label>
+                    <input type="text" class="form-control" id="promoTitle" name="title" required>
+                </div>
+                <div class="mb-3">
+                    <label for="promoDescription" class="form-label">Description (Optional)</label>
+                    <textarea class="form-control" id="promoDescription" name="description" rows="3"></textarea>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="discountPercentage" class="form-label">Discount Percentage (%)</label>
+                        <input type="number" class="form-control" id="discountPercentage" name="discount_percentage" step="0.01" min="0" max="100" placeholder="e.g., 10.5">
+                        <small class="form-text text-muted">Leave blank if using a fixed discount amount.</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="discountAmount" class="form-label">Fixed Discount Amount ($)</label>
+                        <input type="number" class="form-control" id="discountAmount" name="discount_amount" step="0.01" min="0" placeholder="e.g., 25.00">
+                        <small class="form-text text-muted">Leave blank if using a percentage.</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="promoCode" class="form-label">Promo Code (Optional)</label>
+                    <input type="text" class="form-control" id="promoCode" name="promo_code" placeholder="e.g., SUMMER2024">
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="startDate" name="start_date" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="endDate" name="end_date" required>
+                    </div>
+                </div>
+                 <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="isActive" name="is_active" value="1" checked>
+                    <label class="form-check-label" for="isActive">Activate this promotion immediately</label>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Promotion</button>
+            </form>
+            <div id="promotionFormMessage" class="mt-3"></div>
+        </div>
+
+        <!-- Existing Promotions Section -->
+        <div class="promotions-list-section">
+            <h3><i class="fas fa-list-alt"></i> Existing Promotions</h3>
+            <div id="existingPromotionsContainer">
+                <p>Loading existing promotions...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('addPromotionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = this;
+            const formData = new FormData(form);
+            const formMessage = document.getElementById('promotionFormMessage');
+            const submitButton = form.querySelector('button[type="submit"]');
+
+            // Basic client-side validation for discount
+            const discountPercentage = formData.get('discount_percentage');
+            const discountAmount = formData.get('discount_amount');
+            if (!discountPercentage && !discountAmount) {
+                formMessage.innerHTML = '<div class="alert alert-warning">Please provide either a discount percentage or a fixed discount amount.</div>';
+                return;
+            }
+            if (discountPercentage && discountAmount) {
+                formMessage.innerHTML = '<div class="alert alert-warning">Please provide either a discount percentage OR a fixed discount amount, not both.</div>';
+                return;
+            }
+
+            // Ensure is_active is sent even if unchecked
+            if (!formData.has('is_active')) {
+                formData.append('is_active', '0');
+            }
+
+
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            formMessage.innerHTML = '';
+
+            fetch('php/add_promotion.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    formMessage.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                    form.reset();
+                    // Optionally, refresh a list of promotions if displayed on the page
+                } else {
+                    formMessage.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error adding promotion:', error);
+                formMessage.innerHTML = '<div class="alert alert-danger">An error occurred. Please try again.</div>';
+            })
+            .finally(() => {
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-save"></i> Save Promotion';
+            });
+        });
+
+        // Load Existing Promotions
+        const existingPromotionsContainer = document.getElementById('existingPromotionsContainer');
+
+        function fetchAndRenderPromotions() {
+             existingPromotionsContainer.innerHTML = '<p class="text-center">Loading existing promotions...</p>';
+
+             fetch('php/get_all_promotions.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success' && data.promotions) {
+                        if (data.promotions.length > 0) {
+                            renderPromotions(data.promotions);
+                        } else {
+                            existingPromotionsContainer.innerHTML = `
+                                <div class="col-12">
+                                    <div class="alert alert-info text-center">
+                                        <i class="fas fa-info-circle"></i> No promotions found. Add one above!
+                                    </div>
+                                </div>`;
+                        }
+                    } else {
+                        existingPromotionsContainer.innerHTML = `<div class="alert alert-danger col-12">${data.message || 'Could not load promotions.'}</div>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching promotions:', error);
+                    existingPromotionsContainer.innerHTML = '<div class="alert alert-danger col-12">An error occurred while fetching promotions. Please try again later.</div>';
+                });
+        }
+
+        function renderPromotions(promotions) {
+            existingPromotionsContainer.innerHTML = ''; // Clear loading message
+            promotions.forEach(promo => {
+                const startDate = new Date(promo.start_date).toLocaleDateString();
+                const endDate = new Date(promo.end_date).toLocaleDateString();
+                const discount = promo.discount_percentage !== null ? `${parseFloat(promo.discount_percentage).toFixed(2)}%` : `$${parseFloat(promo.discount_amount).toFixed(2)}`;
+                const statusClass = promo.is_active == 1 ? 'text-success' : 'text-danger';
+                const statusText = promo.is_active == 1 ? 'Active' : 'Inactive';
+
+                const promoCardHtml = `
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card promotion-card h-100">
+                            <div class="card-header">
+                                ${promo.title.replace(/</g, "&lt;")} (#${promo.promotion_id})
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Discount:</strong> ${discount}</p>
+                                ${promo.promo_code ? `<p><strong>Code:</strong> ${promo.promo_code.replace(/</g, "&lt;")}</p>` : ''}
+                                ${promo.description ? `<p><strong>Description:</strong> ${promo.description.replace(/</g, "&lt;").replace(/\n/g, '<br>')}</p>` : ''}
+                                <p><strong>Validity:</strong> ${startDate} - ${endDate}</p>
+                                <p><strong>Status:</strong> <span class="${statusClass}">${statusText}</span></p>
+                            </div>
+                            <div class="card-footer text-muted">Created: ${new Date(promo.created_at).toLocaleDateString()}</div>
+                        </div>
+                    </div>`;
+                existingPromotionsContainer.insertAdjacentHTML('beforeend', promoCardHtml);
+            });
+        }
+
+        // Initial load of promotions when the page loads
+        fetchAndRenderPromotions();
+    </script>
+</body>
+</html>

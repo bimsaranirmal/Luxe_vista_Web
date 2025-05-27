@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Dashboard - LuxeVista</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1a3c40;
+      --secondary: #2c666e;
+      --accent: #f0b67f;
+      --light: #f7f9f9;
+      --gold: #d4af37;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      background-color: var(--light);
+      overflow-x: hidden;
+    }
+    
+    /* Navbar Styles (similar to index.html) */
+    .navbar {
+      background-color: rgba(26, 60, 64, 0.95); /* Slightly more opaque for dashboard */
+      backdrop-filter: blur(10px);
+      padding: 15px 0;
+      transition: all 0.3s ease;
+    }
+    
+    .navbar-brand img {
+      height: 50px;
+    }
+    
+    .navbar-nav .nav-link {
+      color: var(--light);
+      font-weight: 500;
+      margin: 0 10px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
+      color: var(--accent);
+    }
+    
+    .navbar-nav .nav-link::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      background-color: var(--accent);
+      transition: width 0.3s ease;
+    }
+    
+    .navbar-nav .nav-link:hover::after, .navbar-nav .nav-link.active::after {
+      width: 100%;
+    }
+    
+    .navbar .btn-logout {
+      background-color: var(--accent);
+      border: 2px solid var(--accent);
+      color: var(--primary);
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .navbar .btn-logout:hover {
+      background-color: transparent;
+      color: var(--accent);
+    }
+
+    .welcome-section {
+      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') no-repeat center center;
+      background-size: cover;
+      padding: 120px 0 80px; /* Adjusted padding */
+      color: white;
+      text-align: center;
+    }
+
+    .welcome-section h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .welcome-section p {
+      font-size: 1.3rem;
+      margin-top: 10px;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .dashboard-content {
+      padding: 60px 0;
+    }
+
+    .dashboard-card {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      padding: 30px;
+      margin-bottom: 30px;
+      transition: all 0.3s ease;
+      text-align: center;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .dashboard-card .card-icon {
+      font-size: 3rem;
+      color: var(--accent);
+      margin-bottom: 20px;
+      line-height: 1;
+    }
+
+    .dashboard-card h4 {
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .dashboard-card p {
+      color: #555;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+
+    .dashboard-card .btn-action {
+      background-color: var(--secondary);
+      border-color: var(--secondary);
+      color: white;
+      font-weight: 500;
+      padding: 8px 25px;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+    }
+    .dashboard-card .btn-action:hover {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    /* Profile Update Form Styles */
+    .profile-update-form {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      margin-top: 40px;
+    }
+    .profile-update-form h3 {
+      color: var(--primary);
+      margin-bottom: 25px;
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    /* My Reviews Section Styles */
+    .my-reviews-section {
+        margin-top: 40px;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    .my-reviews-section h3 {
+        color: var(--primary);
+        margin-bottom: 25px;
+        text-align: center;
+    }
+    .user-review-item {
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background-color: #fdfdfd;
+    }
+    .user-review-item .review-rating .fa-star {
+        color: var(--gold);
+    }
+    .user-review-item .review-date {
+        font-size: 0.85em;
+        color: #777;
+        margin-top: 10px;
+        text-align: right;
+    }
+
+    /* My Support Messages Section Styles */
+    .my-support-messages-section {
+        margin-top: 40px;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    .my-support-messages-section h3 {
+        color: var(--primary);
+        margin-bottom: 25px;
+        text-align: center;
+    }
+    .support-messages-filters {
+        margin-bottom: 20px;
+        text-align: right; /* Align filter to the right */
+    }
+    .user-message-item { /* Similar to user-review-item */
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background-color: #fdfdfd;
+    }
+    .user-message-item .message-subject { font-weight: bold; color: var(--secondary); margin-bottom: 8px; }
+    .user-message-item .message-text { margin-bottom: 10px; }
+    .user-message-item .message-date { font-size: 0.85em; color: #777; margin-top: 10px; text-align: right; }
+    .user-admin-reply {
+        background-color: #e9f5ff; /* Light blue background for admin replies */
+        border-left: 4px solid var(--accent);
+        padding: 10px;
+        margin-top: 15px;
+        border-radius: 4px;
+    }
+    .user-admin-reply p { margin-bottom: 0.3rem; }
+    .user-admin-reply .reply-meta { font-size: 0.8em; color: #555; }
+
+    /* Footer (copied from index.html for consistency) */
+    .footer {
+      background-color: var(--primary);
+      color: var(--light);
+      padding: 70px 0 0;
+    }
+    .footer-logo img { height: 70px; margin-bottom: 20px; }
+    .footer-text { color: rgba(255, 255, 255, 0.7); margin-bottom: 30px; line-height: 1.7; }
+    .footer-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 25px; color: white; position: relative; }
+    .footer-title::after { content: ''; position: absolute; bottom: -10px; left: 0; width: 40px; height: 2px; background: linear-gradient(to right, var(--accent), var(--gold)); }
+    .footer-links { list-style: none; padding: 0; margin: 0; }
+    .footer-links li { margin-bottom: 12px; }
+    .footer-links a { color: rgba(255, 255, 255, 0.7); text-decoration: none; transition: all 0.3s ease; }
+    .footer-links a:hover { color: var(--accent); padding-left: 5px; }
+    .footer-contact i { color: var(--accent); margin-right: 10px; width: 20px; }
+    .footer-contact p { margin-bottom: 15px; color: rgba(255, 255, 255, 0.7); }
+    .social-links { margin-top: 30px; }
+    .social-links a { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.1); color: white; margin-right: 10px; transition: all 0.3s ease; }
+    .social-links a:hover { background-color: var(--accent); transform: translateY(-5px); }
+    .copyright { text-align: center; padding: 20px 0; margin-top: 50px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.5); font-size: 0.9rem; }
+
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <img src="images/logo.png" alt="LuxeVista Logo">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="dashboard.html">My Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="all-rooms.html">Explore Rooms</a>
+          </li>
+          <li class="nav-item" id="navUserNameContainer" style="display:none;">
+            <span class="nav-link text-warning" id="navUserName"></span>
+          </li>
+          <li class="nav-item ms-lg-3">
+            <a class="btn btn-logout" href="php/logout.php">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Welcome Section -->
+  <section class="welcome-section">
+    <div class="container">
+      <h1 id="welcomeMessage" class="animate__animated animate__fadeInDown">Welcome to Your Dashboard!</h1>
+      <p class="animate__animated animate__fadeInUp animate__delay-1s">Manage your bookings, profile, and explore our exclusive offers.</p>
+    </div>
+  </section>
+
+  <!-- Dashboard Content -->
+  <section class="dashboard-content">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 col-md-6 animate__animated animate__fadeInUp">
+          <div class="dashboard-card">
+            <div class="card-icon"><i class="fas fa-calendar-check"></i></div>
+            <h4>My Bookings</h4>
+            <p>View and manage your past and upcoming reservations.</p>
+            <a href="my-bookings.php" class="btn btn-action">View Bookings</a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 animate__animated animate__fadeInUp animate__delay-0_5s">
+          <div class="dashboard-card">
+            <div class="card-icon"><i class="fas fa-user-edit"></i></div>
+            <h4>Edit Profile</h4>
+            <p>Keep your personal information up to date.</p>
+            <button class="btn btn-action" data-bs-toggle="modal" data-bs-target="#profileUpdateModal">Update Profile</button>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 animate__animated animate__fadeInUp animate__delay-1s">
+          <div class="dashboard-card">
+            <div class="card-icon"><i class="fas fa-bed"></i></div>
+            <h4>Explore Rooms</h4>
+              <p>Discover our range of luxury rooms and suites for your next stay.</p>
+              <a href="all-rooms.html" class="btn btn-action">Find a Room</a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 animate__animated animate__fadeInUp animate__delay-1_5s">
+          <div class="dashboard-card">
+            <div class="card-icon"><i class="fas fa-star"></i></div>
+            <h4>Leave a Review</h4>
+            <p>Share your experience and help us improve our services.</p>
+            <button class="btn btn-action" data-bs-toggle="modal" data-bs-target="#reviewModal">Write Review</button>
+          </div>
+        </div>
+         <div class="col-lg-4 col-md-6 animate__animated animate__fadeInUp animate__delay-2s">
+          <div class="dashboard-card">
+            <div class="card-icon"><i class="fas fa-tags"></i></div>
+            <h4>Special Offers</h4>
+            <p>Check out exclusive deals and packages available for you.</p>
+            <button type="button" class="btn btn-action" data-bs-toggle="modal" data-bs-target="#promotionsModal">View Offers</button>
+          </div>
+        </div>
+         <div class="col-lg-4 col-md-6 animate__animated animate__fadeInUp animate__delay-2_5s">
+          <div class="dashboard-card">
+            <div class="card-icon"><i class="fas fa-headset"></i></div>
+            <h4>Support</h4>
+            <p>Need help? Contact our support team for assistance.</p>
+            <button class="btn btn-action" data-bs-toggle="modal" data-bs-target="#contactSupportModal">Contact Us</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Reviews Section -->
+      <div class="row animate__animated animate__fadeInUp animate__delay-3s" id="myReviewsSection" style="display: none;">
+        <div class="col-12">
+          <div class="my-reviews-section">
+            <h3>My Submitted Reviews</h3>
+            <div id="myReviewsContainer"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Support Messages Section -->
+      <div class="row animate__animated animate__fadeInUp animate__delay-3.5s" id="mySupportMessagesSection" style="display: none;">
+        <div class="col-12">
+          <div class="my-support-messages-section">
+            <h3>My Support Messages</h3>
+            <div class="support-messages-filters">
+              <div class="row justify-content-end">
+                <div class="col-md-3">
+                  <select id="userMessageFilterStatus" class="form-select form-select-sm">
+                    <option value="">All Statuses</option>
+                    <option value="replied">Replied</option>
+                    <option value="unreplied">Unreplied</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div id="mySupportMessagesContainer"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Profile Update Modal -->
+  <div class="modal fade" id="profileUpdateModal" tabindex="-1" aria-labelledby="profileUpdateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="profileUpdateModalLabel">Update Your Profile</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="profileUpdateForm">
+            <div class="mb-3">
+              <label for="profileName" class="form-label">Full Name</label>
+              <input type="text" class="form-control" id="profileName" name="name" required>
+            </div>
+            <div class="mb-3">
+              <label for="profileEmail" class="form-label">Email Address</label>
+              <input type="email" class="form-control" id="profileEmail" name="email" required>
+            </div>
+            <div class="mb-3">
+              <label for="profilePhone" class="form-label">Phone Number (Optional)</label>
+              <input type="tel" class="form-control" id="profilePhone" name="phone">
+            </div>
+            <!-- 
+            Future: Add password change fields here if desired.
+            It's recommended to handle password changes separately for security.
+            <hr>
+            <h5>Change Password (Optional)</h5>
+            <div class="mb-3"><label for="currentPassword" class="form-label">Current Password</label><input type="password" class="form-control" id="currentPassword" name="current_password"></div>
+            <div class="mb-3"><label for="newPassword" class="form-label">New Password</label><input type="password" class="form-control" id="newPassword" name="new_password"></div>
+            <div class="mb-3"><label for="confirmNewPassword" class="form-label">Confirm New Password</label><input type="password" class="form-control" id="confirmNewPassword" name="confirm_new_password"></div>
+            -->
+            <div id="profileUpdateMessage" class="mt-3"></div>
+            <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Support Modal -->
+  <div class="modal fade" id="contactSupportModal" tabindex="-1" aria-labelledby="contactSupportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="contactSupportModalLabel">Contact Support</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="contactSupportForm">
+            <div class="mb-3">
+              <label for="contactEmail" class="form-label">Your Email</label>
+              <input type="email" class="form-control" id="contactEmail" name="contact_email" required readonly>
+            </div>
+            <div class="mb-3">
+              <label for="contactSubject" class="form-label">Subject</label>
+              <input type="text" class="form-control" id="contactSubject" name="contact_subject" required>
+            </div>
+            <div class="mb-3">
+              <label for="contactMessage" class="form-label">Message</label>
+              <textarea class="form-control" id="contactMessage" name="contact_message" rows="4" required></textarea>
+            </div>
+            <div id="contactFormMessage" class="mt-3"></div>
+            <button type="submit" class="btn btn-primary w-100">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Promotions Modal -->
+  <div class="modal fade" id="promotionsModal" tabindex="-1" aria-labelledby="promotionsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header" style="background-color: var(--primary); color: var(--light);">
+          <h5 class="modal-title" id="promotionsModalLabel">Special Offers & Promotions</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="promotionsModalBody">
+          <!-- Promotions will be loaded here -->
+          <p class="text-center">Loading promotions...</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-3 col-md-6"><div class="footer-logo"><img src="images/logo.png" alt="LuxeVista Logo"></div><p class="footer-text">Experience unparalleled luxury and comfort at LuxeVista.</p><div class="social-links"><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-twitter"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-linkedin-in"></i></a></div></div>
+        <div class="col-lg-3 col-md-6"><h4 class="footer-title">Quick Links</h4><ul class="footer-links"><li><a href="index.html">Home</a></li><li><a href="index.html#about">About Us</a></li><li><a href="index.html#rooms">Rooms</a></li><li><a href="index.html#testimonials">Testimonials</a></li><li><a href="#">Amenities</a></li><li><a href="#">Gallery</a></li><li><a href="index.html#contact">Contact</a></li></ul></div>
+        <div class="col-lg-3 col-md-6"><h4 class="footer-title">Our Services</h4><ul class="footer-links"><li><a href="#">Restaurant & Bar</a></li><li><a href="#">Spa & Wellness</a></li><li><a href="#">Conference Room</a></li><li><a href="#">Swimming Pool</a></li><li><a href="#">Fitness Center</a></li><li><a href="#">Events & Celebrations</a></li></ul></div>
+        <div class="col-lg-3 col-md-6"><h4 class="footer-title">Contact Us</h4><div class="footer-contact"><p><i class="fas fa-map-marker-alt"></i> 123 Luxury Ave, Colombo, Sri Lanka</p><p><i class="fas fa-phone-alt"></i> +94 11 234 5678</p><p><i class="fas fa-envelope"></i> info@luxevista.com</p><p><i class="fas fa-clock"></i> 24/7 Reception Service</p></div></div>
+      </div>
+    </div>
+    <div class="copyright"><div class="container"><p>&copy; 2025 LuxeVista. All rights reserved.</p></div></div>
+  </footer>
+
+  <!-- Review Modal (Copied from index.html) -->
+  <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="reviewModalLabel">Share Your Experience</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="reviewForm">
+            <div class="mb-3">
+              <label for="guestName" class="form-label">Your Name</label>
+              <input type="text" class="form-control" id="guestName" name="guest_name" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label d-block">Rating</label>
+              <div class="star-rating-input">
+                <input type="radio" id="star5" name="rating" value="5" required/><label for="star5" title="5 stars">★</label>
+                <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 stars">★</label>
+                <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 stars">★</label>
+                <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 stars">★</label>
+                <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 star">★</label>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="reviewText" class="form-label">Your Review</label>
+              <textarea class="form-control" id="reviewText" name="review_text" rows="4" required></textarea>
+            </div>
+            <div id="reviewFormMessage" class="mt-3"></div>
+            <button type="submit" class="btn btn-primary w-100">Submit Review</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Fetch user info and update UI
+      let currentUserId = null; 
+      let currentUserEmail = null;
+      let currentUserName = null;
+
+      const userMessageFilterStatusSelect = document.getElementById('userMessageFilterStatus');
+
+      function fetchUserInfoAndMessages(filters = {}) {
+        let fetchUrl = 'php/get_user_info.php';
+        const queryParams = new URLSearchParams();
+
+        if (filters.contact_reply_status_filter) {
+          queryParams.append('contact_reply_status_filter', filters.contact_reply_status_filter);
+        }
+        // Add other filters here if needed in the future, e.g., for bookings
+        // if (filters.booking_status_filter) {
+        //   queryParams.append('booking_status_filter', filters.booking_status_filter);
+        // }
+
+        const queryString = queryParams.toString();
+        if (queryString) {
+          fetchUrl += `?${queryString}`;
+        }
+
+        fetch(fetchUrl)
+          .then(response => response.json())
+          .then(data => {
+            if (data.logged_in) {
+              currentUserId = data.user_id;
+              document.getElementById('welcomeMessage').textContent = `Welcome, ${data.user_name}!`;
+              const navUserName = document.getElementById('navUserName');
+              navUserName.textContent = `Hi, ${data.user_name.split(' ')[0]}`;
+              document.getElementById('navUserNameContainer').style.display = 'block';
+              
+              currentUserEmail = data.email;
+              currentUserName = data.user_name;
+              prefillProfileForm(data);
+
+              if (typeof data.reviews !== 'undefined') { 
+                renderMyReviews(data.reviews);
+              }
+              // Render user's submitted contact messages
+              // This will now reflect the filtered messages if a filter was applied
+              if (typeof data.contact_messages !== 'undefined') {
+                renderMySupportMessages(data.contact_messages);
+              }
+            } else {
+              // window.location.href = 'login.html'; 
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching user info:', error);
+          });
+      }
+
+      // Initial fetch when page loads
+      fetchUserInfoAndMessages();
+
+      // Event listener for the support message filter
+      if (userMessageFilterStatusSelect) {
+        userMessageFilterStatusSelect.addEventListener('change', function() {
+          const filters = {
+            contact_reply_status_filter: this.value
+          };
+          fetchUserInfoAndMessages(filters);
+        });
+      }
+
+      // Smooth scrolling for any on-page anchor links if needed
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          const targetHref = this.getAttribute('href');
+          if (targetHref.length > 1 && document.querySelector(targetHref)) { // Check if it's more than just "#"
+            e.preventDefault();
+            document.querySelector(targetHref).scrollIntoView({
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+
+      // Handle Profile Update Form Submission
+      const profileUpdateForm = document.getElementById('profileUpdateForm');
+      if (profileUpdateForm) {
+        profileUpdateForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const formData = new FormData(this);
+          const submitButton = this.querySelector('button[type="submit"]');
+          const formMessage = document.getElementById('profileUpdateMessage');
+
+          submitButton.disabled = true;
+          submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+          formMessage.innerHTML = '';
+
+          fetch('php/update-profile.php', {
+            method: 'POST',
+            body: formData
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === 'success') {
+              formMessage.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+              // Update welcome message and navbar name if name was changed
+              const newName = formData.get('name');
+              if (newName) {
+                document.getElementById('welcomeMessage').textContent = `Welcome, ${newName}!`;
+                document.getElementById('navUserName').textContent = `Hi, ${newName.split(' ')[0]}`;
+              }
+              // Optionally close modal after a delay
+              setTimeout(() => {
+                const profileModal = bootstrap.Modal.getInstance(document.getElementById('profileUpdateModal'));
+                if (profileModal) profileModal.hide();
+                formMessage.innerHTML = ''; // Clear message after closing
+              }, 2000);
+            } else {
+              formMessage.innerHTML = `<div class="alert alert-${data.status === 'info' ? 'info' : 'danger'}">${data.message}</div>`;
+            }
+          })
+          .catch(error => {
+            formMessage.innerHTML = `<div class="alert alert-danger">An error occurred. Please try again.</div>`;
+            console.error('Error updating profile:', error);
+          })
+          .finally(() => {
+            submitButton.disabled = false;
+            submitButton.innerHTML = 'Save Changes';
+          });
+        });
+      }
+      const reviewModalElement = document.getElementById('reviewModal');
+      if (reviewModalElement) {
+        reviewModalElement.addEventListener('show.bs.modal', function () {
+          const guestNameInput = document.getElementById('guestName');
+          const reviewFormMessage = document.getElementById('reviewFormMessage');
+          const reviewForm = document.getElementById('reviewForm');
+
+          reviewFormMessage.innerHTML = ''; // Clear previous messages
+          reviewForm.reset(); // Reset form fields
+
+          // Use already fetched user data to pre-fill name/email
+          if (currentUserId) { // Check if user is logged in (currentUserId would be set)
+            if (currentUserName) {
+              guestNameInput.value = currentUserName;
+            } else if (currentUserEmail) {
+              guestNameInput.value = currentUserEmail; // Fallback to email if name not present
+            }
+            guestNameInput.readOnly = true;
+          } else {
+            guestNameInput.value = '';
+            guestNameInput.readOnly = false;
+              }
+        });
+      }
+
+      // Handle Review Form Submission
+      const reviewForm = document.getElementById('reviewForm'); // Get the form element again
+      if (reviewForm) {
+        reviewForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const formData = new FormData(this);
+          const submitButton = this.querySelector('button[type="submit"]');
+          const formMessage = document.getElementById('reviewFormMessage');
+
+          submitButton.disabled = true;
+          submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+          formMessage.innerHTML = '';
+
+          fetch('php/submit-review.php', {
+            method: 'POST',
+            body: formData
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === 'success') {
+              formMessage.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+              reviewForm.reset(); // Reset form fields
+              // No need to call fetchReviews() here as dashboard doesn't display reviews
+              // Close modal after a short delay
+              setTimeout(() => {
+                const reviewModalInstance = bootstrap.Modal.getInstance(document.getElementById('reviewModal'));
+                if (reviewModalInstance) reviewModalInstance.hide();
+              }, 2000); // 2-second delay
+            } else {
+              formMessage.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+            }
+          })
+          .catch(error => {
+            formMessage.innerHTML = `<div class="alert alert-danger">An error occurred. Please try again.</div>`;
+            console.error('Error submitting review:', error);
+          })
+          .finally(() => {
+            submitButton.disabled = false;
+            submitButton.innerHTML = 'Submit Review';
+          });
+        });
+      }
+
+      // Handle Contact Support Modal
+      const contactSupportModalElement = document.getElementById('contactSupportModal');
+      if (contactSupportModalElement) {
+        contactSupportModalElement.addEventListener('show.bs.modal', function () {
+          const contactEmailInput = document.getElementById('contactEmail');
+          const contactFormMessage = document.getElementById('contactFormMessage');
+          const contactSupportForm = document.getElementById('contactSupportForm');
+
+          if (contactFormMessage) contactFormMessage.innerHTML = '';
+          if (contactSupportForm) contactSupportForm.reset(); 
+
+          if (contactEmailInput && currentUserEmail) {
+            contactEmailInput.value = currentUserEmail;
+            // contactEmailInput.readOnly = true; // Already set in HTML
+          } else if (contactEmailInput) {
+              contactEmailInput.value = 'Email not found'; // Or leave blank
+          }
+        });
+
+        const contactSupportForm = document.getElementById('contactSupportForm');
+        if (contactSupportForm) {
+          contactSupportForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const submitButton = this.querySelector('button[type="submit"]');
+            const formMessage = document.getElementById('contactFormMessage');
+
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            if(formMessage) formMessage.innerHTML = '';
+
+            fetch('php/submit-contact-form.php', {
+              method: 'POST',
+              body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.status === 'success') {
+                if(formMessage) formMessage.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                this.reset();
+                if (document.getElementById('contactEmail') && currentUserEmail) document.getElementById('contactEmail').value = currentUserEmail; // Re-fill email
+                setTimeout(() => {
+                  const modalInstance = bootstrap.Modal.getInstance(contactSupportModalElement);
+                  if (modalInstance) modalInstance.hide();
+                }, 2500);
+              } else {
+                if(formMessage) formMessage.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+              }
+            })
+            .catch(error => {
+              if(formMessage) formMessage.innerHTML = `<div class="alert alert-danger">An error occurred. Please try again.</div>`;
+              console.error('Error submitting contact form:', error);
+            })
+            .finally(() => {
+              submitButton.disabled = false;
+              submitButton.innerHTML = 'Send Message';
+            });
+          });
+        }
+      }
+
+      function prefillProfileForm(userData) {
+        const profileNameInput = document.getElementById('profileName');
+        const profileEmailInput = document.getElementById('profileEmail');
+        const profilePhoneInput = document.getElementById('profilePhone');
+
+        if (profileNameInput) profileNameInput.value = userData.user_name || '';
+        if (profileEmailInput) profileEmailInput.value = userData.email || ''; // Assuming email is part of userData
+        if (profilePhoneInput) profilePhoneInput.value = userData.phone || ''; // Assuming phone is part of userData
+        
+        // Note: To prefill email and phone, get_user_info.php needs to be updated
+        // to fetch and return these details from the database, not just from session.
+      }
+
+      function renderMyReviews(reviews) {
+        const container = document.getElementById('myReviewsContainer');
+        const section = document.getElementById('myReviewsSection');
+        if (!container || !section) return;
+
+        if (reviews.length === 0) {
+          container.innerHTML = '<p class="text-center">You have not submitted any reviews yet.</p>';
+          section.style.display = 'block'; // Show the section even if no reviews, to display the message
+          return;
+        }
+
+        let reviewsHTML = '';
+        reviews.forEach(review => {
+          let stars = '';
+          for (let i = 0; i < 5; i++) {
+            stars += `<i class="fa-star ${i < review.rating ? 'fas' : 'far'}"></i>`;
+          }
+          const reviewDate = new Date(review.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+          reviewsHTML += `
+            <div class="user-review-item">
+              <div class="review-rating mb-2">${stars}</div>
+              <p class="review-text">${review.review_text.replace(/\n/g, '<br>')}</p>
+              <div class="review-date">Submitted on: ${reviewDate}</div>
+            </div>`;
+        });
+        container.innerHTML = reviewsHTML;
+        section.style.display = 'block'; // Make the section visible
+      }
+
+      function renderMySupportMessages(messages) {
+        const container = document.getElementById('mySupportMessagesContainer');
+        const section = document.getElementById('mySupportMessagesSection');
+        if (!container || !section) return;
+
+        if (!messages || messages.length === 0) {
+          container.innerHTML = '<p class="text-center">You have not submitted any support messages yet.</p>';
+          section.style.display = 'block'; // Show the section to display the message
+          return;
+        }
+
+        let messagesHTML = '';
+        messages.forEach(msg => {
+          const messageDate = new Date(msg.submitted_at).toLocaleDateString('en-US', { 
+            year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+          });
+
+          let adminReplyHtml = '';
+          if (msg.admin_reply_message) {
+            const adminRepliedDate = new Date(msg.admin_replied_at).toLocaleString('en-US', {
+              year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+            adminReplyHtml = `
+              <div class="user-admin-reply">
+                <p><strong>Admin Reply:</strong></p>
+                <p style="white-space: pre-wrap;">${msg.admin_reply_message.replace(/</g, "&lt;").replace(/\n/g, '<br>')}</p>
+                <p class="reply-meta">Replied on: ${adminRepliedDate}</p>
+              </div>`;
+          }
+
+          messagesHTML += `
+            <div class="user-message-item">
+              <div class="message-subject">${msg.subject ? msg.subject.replace(/</g, "&lt;").replace(/>/g, "&gt;") : 'No Subject'}</div>
+              <p class="message-text">${msg.message ? msg.message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, '<br>') : ''}</p>
+              ${adminReplyHtml}
+              <div class="message-date">Submitted on: ${messageDate}</div>
+            </div>`;
+        });
+        container.innerHTML = messagesHTML;
+        section.style.display = 'block'; // Make the section visible
+      }
+
+      // Promotions Modal Logic
+      const promotionsModalElement = document.getElementById('promotionsModal');
+      const promotionsModalBody = document.getElementById('promotionsModalBody');
+
+      if (promotionsModalElement) {
+        promotionsModalElement.addEventListener('show.bs.modal', function () {
+          fetchAndDisplayPromotions();
+        });
+      }
+
+      function fetchAndDisplayPromotions() {
+        if (!promotionsModalBody) return;
+        promotionsModalBody.innerHTML = '<p class="text-center py-5"><i class="fas fa-spinner fa-spin fa-2x"></i><br>Loading promotions...</p>';
+
+        fetch('php/get_all_promotions.php')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            if (data.status === 'success' && data.promotions && data.promotions.length > 0) {
+              renderPromotionsInModal(data.promotions);
+            } else if (data.status === 'success' && data.promotions && data.promotions.length === 0) {
+              promotionsModalBody.innerHTML = '<p class="text-center py-5">No special offers available at the moment. Please check back later!</p>';
+            } else {
+              promotionsModalBody.innerHTML = `<p class="text-center text-danger py-5">Could not load promotions: ${data.message || 'Unknown error'}</p>`;
+              console.error('Error fetching promotions:', data.message);
+            }
+          })
+          .catch(error => {
+            promotionsModalBody.innerHTML = '<p class="text-center text-danger py-5">An error occurred while fetching promotions. Please try again later.</p>';
+            console.error('Fetch error for promotions:', error);
+          });
+      }
+
+      function renderPromotionsInModal(promotions) {
+        if (!promotionsModalBody) return;
+
+        const escapeHtml = (unsafe) => {
+          if (typeof unsafe !== 'string') return '';
+          return unsafe
+               .replace(/&/g, "&amp;")
+               .replace(/</g, "&lt;")
+               .replace(/>/g, "&gt;")
+               .replace(/"/g, "&quot;")
+               .replace(/'/g, "&#039;");
+        };
+
+        let promotionsHTML = '<div class="list-group">';
+        promotions.forEach(promo => {
+          const startDate = new Date(promo.start_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+          const endDate = new Date(promo.end_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+          const isActive = parseInt(promo.is_active, 10) === 1;
+
+          const activeStatusBadge = isActive ? `<span class="badge bg-success ms-2">Active</span>` : `<span class="badge bg-secondary ms-2">Expired/Inactive</span>`;
+          let discountInfo = '';
+          if (promo.discount_percentage && parseFloat(promo.discount_percentage) > 0) {
+              discountInfo = `<strong class="text-success">${parseFloat(promo.discount_percentage)}% OFF</strong>`;
+          } else if (promo.discount_amount && parseFloat(promo.discount_amount) > 0) {
+              discountInfo = `<strong class="text-success">$${parseFloat(promo.discount_amount).toFixed(2)} OFF</strong>`;
+          }
+
+          promotionsHTML += `
+            <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 border rounded shadow-sm">
+              <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">${escapeHtml(promo.title)} ${activeStatusBadge}</h5>
+                <small class="text-muted">Ends: ${endDate}</small>
+              </div>
+              <p class="mb-1">${promo.description ? escapeHtml(promo.description).replace(/\n/g, '<br>') : '<em>No description available.</em>'}</p>
+              ${promo.promo_code ? `<p class="mb-1">Promo Code: <strong class="text-primary user-select-all">${escapeHtml(promo.promo_code)}</strong></p>` : ''}
+              ${discountInfo ? `<p class="mb-1">${discountInfo}</p>` : ''}
+              <small class="text-muted d-block mt-1">Valid: ${startDate} - ${endDate}</small>
+            </div>`;
+        });
+        promotionsHTML += '</div>';
+        promotionsModalBody.innerHTML = promotionsHTML;
+      }
+    });
+  </script>
+</body>
+</html>

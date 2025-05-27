@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore Our Rooms - LuxeVista</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css" />
+  <style>
+     :root {
+      --primary: #1a3c40;
+      --secondary: #2c666e;
+      --accent: #f0b67f;
+      --light: #f7f9f9;
+      --gold: #d4af37;
+      --dark-text: #333;
+      --sidebar-width: 240px;
+    }
+    
+    body {
+      background: linear-gradient(135deg, rgba(26, 60, 64, 0.05), rgba(44, 102, 110, 0.05));
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--dark-text);
+      margin: 0;
+      min-height: 100vh;
+    }
+    
+    /* Logo styling */
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2rem;
+      padding: 1rem 0.5rem;
+    }
+    
+    .logo {
+      max-width: 80%;
+      height: auto;
+    }
+    
+    /* Sidebar styling */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      width: var(--sidebar-width);
+      background: linear-gradient(180deg, var(--primary), var(--secondary));
+      padding: 20px 0;
+      color: white;
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .sidebar-item {
+      margin: 8px 20px;
+    }
+    
+    .sidebar-link {
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+    
+    .sidebar-link:hover,
+    .sidebar-link.active {
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+    
+    .sidebar-link.active {
+      background: linear-gradient(90deg, var(--accent), var(--gold));
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+    }
+    
+    .sidebar-icon {
+      margin-right: 12px;
+      width: 20px;
+      text-align: center;
+    }
+    .main-content {
+      margin-left: var(--sidebar-width);
+      padding: 30px;
+      transition: all 0.3s ease;
+    }
+        .page-header {
+            color: var(--primary);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--accent);
+        }
+        .page-header h1 { font-size: 2.5rem; font-weight: 700; }
+
+    .filters-sidebar {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+    }
+    .filters-sidebar h4 { color: var(--primary); margin-bottom: 20px; }
+
+    /* Room Card Styles (copied from index.html for consistency) */
+    .room-card { border-radius: 10px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 30px; transition: all 0.3s ease; height: 100%; display: flex; flex-direction: column; }
+    .room-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.15); }
+    .room-image { height: 220px; overflow: hidden; position: relative; }
+    .room-image img { width: 100%; height: 100%; object-fit: cover; transition: all 0.5s ease; }
+    .room-card:hover .room-image img { transform: scale(1.05); }
+    .room-type-badge { position: absolute; top: 15px; right: 15px; background: linear-gradient(135deg, var(--accent), var(--gold)); color: white; font-weight: 600; padding: 5px 15px; border-radius: 25px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+    .room-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+    .room-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 10px; color: var(--primary); }
+    .room-price { font-size: 1.4rem; font-weight: 700; color: var(--secondary); margin-bottom: 15px; }
+    .room-price span { font-size: 0.9rem; color: #888; font-weight: 400; }
+    .room-features { margin-bottom: 15px; font-size: 0.9rem; color: #777; }
+    .room-features span { margin-right: 15px; }
+    .room-features i { color: var(--accent); margin-right: 5px; }
+    .room-description { font-size: 0.9rem; color: #666; margin-bottom: 20px; line-height: 1.6; flex-grow: 1; }
+    .btn-view-room { background-color: transparent; border: 2px solid var(--secondary); color: var(--secondary); font-weight: 600; padding: 8px 20px; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem; margin-top: auto; }
+    .btn-view-room:hover { background-color: var(--secondary); color: white; }
+    
+    .loader-container { display: flex; justify-content: center; align-items: center; min-height: 200px; width: 100%;}
+    .loader { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* noUiSlider custom styles */
+    .noUi-connect { background: var(--secondary); }
+    .noUi-handle { border: 1px solid var(--primary); background: #FFF; box-shadow: none; }
+    #price-slider-values { margin-top: 10px; font-weight: 500; color: var(--primary); }
+
+      </style>
+</head>
+<body>
+
+ 
+
+  
+
+  <main class="container py-5">
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="animate__animated animate__fadeInDown"><i class="fas fa-bullhorn"></i> Book Rooms</h1>
+        </div>
+    <div class="row">
+      <!-- Filters Sidebar -->
+      <aside class="col-lg-3">
+        <div class="filters-sidebar">
+          <h4>Filter Rooms</h4>
+          <form id="filterForm">
+            <div class="mb-3">
+              <label for="filterCheckInDate" class="form-label">Check-in Date</label>
+              <input type="date" class="form-control" id="filterCheckInDate" name="check_in_date">
+            </div>
+            <div class="mb-3">
+              <label for="filterCheckOutDate" class="form-label">Check-out Date</label>
+              <input type="date" class="form-control" id="filterCheckOutDate" name="check_out_date">
+            </div>
+            <hr> <!-- Separator for date filters -->
+            
+            <div class="mb-3">
+              <label for="filterRoomType" class="form-label">Room Type</label>
+              <select class="form-select" id="filterRoomType" name="room_type">
+                <option value="all" selected>All Types</option>
+                <!-- Options will be populated by JS or you can hardcode common types -->
+                <option value="Single Room">Single Room</option>
+                <option value="Double Room">Double Room</option>
+                <option value="Deluxe Suite">Deluxe Suite</option>
+                <option value="Family Room">Family Room</option>
+                <option value="Presidential Suite">Presidential Suite</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="filterMinCapacity" class="form-label">Min. Capacity (Guests)</label>
+              <input type="number" class="form-control" id="filterMinCapacity" name="min_capacity" min="1" placeholder="e.g., 2">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Price per Night (Max)</label>
+              <div id="priceRangeSlider"></div>
+              <div id="price-slider-values">$0 - $1000+</div>
+              <input type="hidden" id="filterMaxPrice" name="max_price">
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="filterShowAllAvailability" name="show_all_availability">
+                <label class="form-check-label" for="filterShowAllAvailability">Include Unavailable Rooms</label>
+            </div>
+            <button type="submit" class="btn btn-primary w-100" style="background-color: var(--primary); border-color: var(--primary);">Apply Filters</button>
+            <button type="button" class="btn btn-outline-secondary w-100 mt-2" id="resetFilters">Reset Filters</button>
+          </form>
+        </div>
+      </aside>
+
+      <!-- Rooms Display -->
+      <section class="col-lg-9">
+        <div class="row" id="roomsDisplayContainer">
+          <!-- Room cards will be injected here by JavaScript -->
+          <div class="loader-container">
+            <div class="loader"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const roomsDisplayContainer = document.getElementById('roomsDisplayContainer');
+      const filterForm = document.getElementById('filterForm');
+      const resetFiltersButton = document.getElementById('resetFilters');
+      const priceSlider = document.getElementById('priceRangeSlider');
+      const priceSliderValues = document.getElementById('price-slider-values');
+      const maxPriceInput = document.getElementById('filterMaxPrice');
+      const checkInDateInput = document.getElementById('filterCheckInDate');
+      const checkOutDateInput = document.getElementById('filterCheckOutDate');
+
+      // Initialize Price Slider
+      if (priceSlider) {
+        noUiSlider.create(priceSlider, {
+            start: [1000], // Default max price
+            connect: [true, false], // Connect to the lower side
+            step: 50,
+            range: {
+                'min': 0,
+                'max': 1000 // Adjust max as per your highest room price
+            },
+            format: {
+              to: function (value) { return parseInt(value); },
+              from: function (value) { return parseInt(value); }
+            }
+        });
+
+        priceSlider.noUiSlider.on('update', function (values, handle) {
+            const value = parseInt(values[handle]);
+            priceSliderValues.innerHTML = `$0 - $${value}${value === 1000 ? '+' : ''}`;
+            maxPriceInput.value = value === 1000 ? '' : value; // If max, don't filter by max price
+        });
+      }
+      
+      // Set minimum date for date pickers to today
+      const today = new Date().toISOString().split('T')[0];
+      if(checkInDateInput) checkInDateInput.setAttribute('min', today);
+      if(checkOutDateInput) checkOutDateInput.setAttribute('min', today);
+
+      function fetchAndDisplayRooms(params = {}) {
+        roomsDisplayContainer.innerHTML = '<div class="loader-container"><div class="loader"></div></div>';
+        const queryParams = new URLSearchParams(params).toString();
+        
+        fetch(`php/view-rooms.php?${queryParams}`)
+          .then(response => {
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return response.json();
+          })
+          .then(rooms => {
+            renderRooms(rooms);
+          })
+          .catch(error => {
+            console.error('Error fetching rooms:', error);
+            roomsDisplayContainer.innerHTML = `<div class="col-12 text-center alert alert-danger">Failed to load rooms. ${error.message}</div>`;
+          });
+      }
+
+      function renderRooms(rooms) {
+        roomsDisplayContainer.innerHTML = ''; // Clear previous rooms or loader
+        if (rooms.length === 0) {
+          roomsDisplayContainer.innerHTML = '<div class="col-12 text-center"><p>No rooms found matching your criteria.</p></div>';
+          return;
+        }
+        rooms.forEach(room => {
+          const card = `
+            <div class="col-md-6 col-lg-4 d-flex align-items-stretch">
+              <div class="room-card">
+                <div class="room-image">
+                  <img src="${room.main_image}" alt="${room.room_type}">
+                  <div class="room-type-badge">${room.room_type}</div>
+                </div>
+                <div class="room-content">
+                  <h3 class="room-title">Room ID: ${room.room_id}</h3>
+                  <div class="room-price">$${parseFloat(room.price_per_night).toFixed(2)} <span>per night</span></div>
+                  <div class="room-features">
+                    <span><i class="fas fa-user-friends"></i> ${room.capacity} Guests</span>
+                    <span><i class="fas fa-check-circle"></i> ${room.availability}</span>
+                  </div>
+                  <p class="room-description">${truncateText(room.description, 100)}</p>
+                  <a href="admin-room-details.php?id=${room.room_id}" class="btn btn-view-room">View Details</a>
+                </div>
+              </div>
+            </div>
+          `;
+          roomsDisplayContainer.innerHTML += card;
+        });
+      }
+
+      function truncateText(text, maxLength) {
+        if (!text) return '';
+        if (text.length <= maxLength) return text;
+        return text.substr(0, maxLength) + '...';
+      }
+
+      if (filterForm) {
+        filterForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const formData = new FormData(filterForm);
+          
+          // Basic date validation
+          const checkIn = formData.get('check_in_date');
+          const checkOut = formData.get('check_out_date');
+          if (checkIn && checkOut && new Date(checkOut) <= new Date(checkIn)) {
+              alert('Check-out date must be after check-in date.');
+              return; // Prevent form submission
+          }
+
+          const params = {};
+          for (let [key, value] of formData.entries()) {
+            if (value && value !== 'all') { // 'all' for room type means no filter
+                if (key === 'max_price' && (value === '1000' || value === '')) { // If slider is at max (or empty), don't send max_price filter
+                    // do nothing for max_price if it's the highest or empty
+                } else {
+                    params[key] = value;
+                }
+            }
+          }
+          if (document.getElementById('filterShowAllAvailability').checked) {
+            params['show_all_availability'] = '1';
+          }
+          fetchAndDisplayRooms(params);
+        });
+      }
+
+      if (resetFiltersButton) {
+        resetFiltersButton.addEventListener('click', function() {
+          filterForm.reset();
+          // Reset date inputs min attribute
+          checkInDateInput.setAttribute('min', today);
+          if (priceSlider) {
+            priceSlider.noUiSlider.set(1000); // Reset slider to max
+          }
+          maxPriceInput.value = ''; // Clear hidden max price input
+          fetchAndDisplayRooms(); // Fetch all rooms
+        });
+      }
+
+      // Initial load of rooms
+      fetchAndDisplayRooms();
+
+      // Check login status for navbar
+        fetch('php/get_user_info.php')
+            .then(response => response.json())
+            .then(data => {
+                const userAuthLinkContainer = document.getElementById('userAuthLinkContainer');
+                if (data.logged_in) {
+                    userAuthLinkContainer.innerHTML = `
+                        <span class="navbar-text text-white me-3">Hi, ${data.user_name.split(' ')[0]}</span>
+                        <a class="btn btn-user-action" href="dashboard.html">Dashboard</a>
+                        <a class="btn btn-user-action ms-2" href="php/logout.php">Logout</a>`;
+                } else {
+                    userAuthLinkContainer.innerHTML = '<a class="btn btn-user-action" href="login.html">Login / Register</a>';
+                }
+            })
+            .catch(error => console.error('Error fetching user status:', error));
+    });
+  </script>
+</body>
+</html>

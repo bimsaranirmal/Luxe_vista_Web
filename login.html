@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - LuxeVista</title>
+  <meta name="google-signin-client_id" content="956907905937-cjr0ptmvvokkubipklkrg5d0nrgtsin3.apps.googleusercontent.com">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <style>
+    :root {
+      --primary: #1a3c40;
+      --secondary: #2c666e;
+      --accent: #f0b67f;
+      --light: #f7f9f9;
+      --gold: #d4af37;
+    }
+    
+    body {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+
+    }
+    
+    .login-container {
+      margin-top: 20px;
+      width: 100%;
+      max-width: 540px;
+      position: relative;
+    }
+    
+    .login-card {
+      background-color: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+      padding: 2.5rem;
+    }
+    
+    .login-header {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    
+    .logo {
+      max-width: 150px;
+      margin-bottom: 10px;
+    }
+    
+    .login-header h2 {
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 28px;
+      margin-bottom: 5px;
+    }
+    
+    .login-header p {
+      color: var(--secondary);
+      font-size: 14px;
+    }
+    
+    .form-floating {
+      margin-bottom: 1.2rem;
+    }
+    
+    .form-floating input {
+      border: 2px solid #e1e5ea;
+      padding-left: 40px;
+      height: 56px;
+      transition: all 0.3s;
+    }
+    
+    .form-floating input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 0.25rem rgba(240, 182, 127, 0.25);
+    }
+    
+    .input-icon {
+      position: absolute;
+      top: 18px;
+      left: 90%;
+      color: var(--secondary);
+      z-index: 2;
+    }
+    
+    .btn-login {
+      background: linear-gradient(135deg, var(--accent), var(--gold));
+      border: none;
+      height: 56px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 10px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-login:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(240, 182, 127, 0.4);
+    }
+    
+    .btn-login::after {
+      content: "";
+      background: rgba(255, 255, 255, 0.2);
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 200%;
+      height: 200%;
+      transform: rotate(30deg);
+      transition: all 0.6s;
+    }
+    
+    .btn-login:hover::after {
+      left: 100%;
+    }
+    
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 1.75rem 0;
+      color: #6c757d;
+      font-size: 12px;
+    }
+    
+    .divider::before, .divider::after {
+      content: "";
+      flex: 1;
+      border-bottom: 1px solid #e1e5ea;
+    }
+    
+    .divider span {
+      padding: 0 10px;
+    }
+    
+    .social-login {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .google-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: white;
+      border: 2px solid #e1e5ea;
+      border-radius: 5px;
+      padding: 8px 20px;
+      font-weight: 500;
+      color: #757575;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .google-btn:hover {
+      background-color: #f8f9fa;
+      border-color: #d2d6da;
+    }
+    
+    .google-btn img {
+      height: 24px;
+      margin-right: 10px;
+    }
+    
+    .signup-link {
+      text-align: center;
+      color: var(--secondary);
+      font-size: 14px;
+      margin-top: 1.5rem;
+    }
+    
+    .signup-link a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    
+    .signup-link a:hover {
+      color: var(--gold);
+    }
+    
+    .forgotten-password {
+      text-align: right;
+      margin-bottom: 1rem;
+    }
+    
+    .forgotten-password a {
+      color: var(--secondary);
+      font-size: 13px;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    
+    .forgotten-password a:hover {
+      color: var(--primary);
+    }
+    
+    /* Decorative elements */
+    .decoration {
+      position: absolute;
+      border-radius: 50%;
+      background: linear-gradient(45deg, var(--accent), var(--gold));
+      opacity: 0.7;
+      filter: blur(30px);
+      z-index: 0;
+    }
+    
+    .decoration-1 {
+      width: 300px;
+      height: 300px;
+      top: -150px;
+      right: -150px;
+    }
+    
+    .decoration-2 {
+      width: 200px;
+      height: 200px;
+      bottom: -70px;
+      left: -100px;
+    }
+    
+    /* Animations for form elements */
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+    
+    .float-animation {
+      animation: float 6s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="decoration decoration-1"></div>
+  <div class="decoration decoration-2"></div>
+  
+  <div class="login-container">
+    <div class="login-card animate__animated animate__fadeIn">
+      <div class="login-header">
+        <div class="float-animation">
+          <img src="../Luxe_vista/images/logo.png" alt="LuxeVista Logo" class="logo">
+        </div>
+        <h2>Welcome Back</h2>
+        <p>Sign in to access your LuxeVista experience</p>
+      </div>
+      
+      <form action="php/login.php" method="POST" id="loginForm">
+        <div class="form-floating position-relative">
+          <i class="fas fa-envelope input-icon"></i>
+          <input type="email" name="email" class="form-control" id="email" placeholder="Email" required>
+          <label for="email">Email</label>
+        </div>
+        
+        <div class="form-floating position-relative">
+          <i class="fas fa-lock input-icon"></i>
+          <input type="password" name="password" class="form-control" id="password" placeholder="Password" required>
+          <label for="password">Password</label>
+        </div>
+        
+        <div class="forgotten-password">
+            <a href="#" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Forgotten password?</a>
+          </div>
+
+        
+
+        
+        <button type="submit" class="btn btn-login w-100 animate__animated animate__pulse">
+          Login
+        </button>
+      </form>
+      
+      <div class="divider">
+        <span>OR CONTINUE WITH</span>
+      </div>
+      
+      <div class="social-login">
+        <div class="google-btn" id="googleSignIn">
+          <img src="../Luxe_vista/images/7123025_logo_google_g_icon (1).png" alt="Google Logo">
+          <span>Google</span>
+        </div>
+      </div>
+      
+      <div class="signup-link">
+        Don't have an account? <a href="register.html">Sign up now</a>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="forgotPasswordModalLabel">Reset Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="forgotPasswordForm">
+            <!-- Email Field -->
+            <div class="mb-3">
+              <label for="resetEmail" class="form-label">Email</label>
+              <input type="email" class="form-control" id="resetEmail" name="email" placeholder="Enter your email" required>
+            </div>
+            <!-- Phone Field -->
+            <div class="mb-3">
+              <label for="resetPhone" class="form-label">Phone</label>
+              <input type="text" class="form-control" id="resetPhone" name="phone" placeholder="Enter your phone number" required>
+            </div>
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary w-100">Request Reset</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize animations
+      const loginForm = document.getElementById('loginForm');
+      
+      // Add animation to form elements on load
+      const formElements = document.querySelectorAll('.form-floating, .btn-login');
+      formElements.forEach((element, index) => {
+        element.classList.add('animate__animated', 'animate__fadeInUp');
+        element.style.animationDelay = `${0.2 + (index * 0.1)}s`;
+      });
+      
+      // Add animation for input focus
+      const inputs = document.querySelectorAll('.form-control');
+      inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+          this.parentElement.classList.add('animate__animated', 'animate__pulse');
+          setTimeout(() => {
+            this.parentElement.classList.remove('animate__animated', 'animate__pulse');
+          }, 1000);
+        });
+      });
+      
+      // Handle form submission with animation
+      loginForm.addEventListener('submit', function(e) {
+        const submitBtn = document.querySelector('.btn-login');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+      });
+      
+      // Handle Google Sign In
+      document.getElementById('googleSignIn').addEventListener('click', function() {
+        // This would normally call your actual Google Sign In function
+        this.classList.add('animate__animated', 'animate__headShake');
+        setTimeout(() => {
+          this.classList.remove('animate__animated', 'animate__headShake');
+        }, 1000);
+      });
+      
+      // Function to handle Google Sign In response
+      window.onSignIn = function(googleUser) {
+        // This is where you'd handle the Google Sign-in response
+        const profile = googleUser.getBasicProfile();
+        console.log('ID: ' + profile.getId());
+        console.log('Name: ' + profile.getName());
+        console.log('Email: ' + profile.getEmail());
+        
+        // You would normally send this info to your server for verification
+      };
+    });
+    
+    // Background animation
+    document.addEventListener('mousemove', function(e) {
+      const decorations = document.querySelectorAll('.decoration');
+      const moveX = (e.clientX - window.innerWidth / 2) / 50;
+      const moveY = (e.clientY - window.innerHeight / 2) / 50;
+      
+      decorations.forEach(decoration => {
+        decoration.style.transform = `translate(${moveX}px, ${moveY}px)`;
+      });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const loginForm = document.getElementById('loginForm');
+    
+        loginForm.addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent default form submission
+    
+            const formData = new FormData(loginForm);
+            const submitBtn = document.querySelector('.btn-login');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+    
+            fetch('php/login.php', {
+                method: 'POST',
+                body: formData,
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.status === 'success') {
+                        window.location.href = data.redirect; // Redirect on success
+                    } else if (data.status === 'error') {
+                        alert(data.message); // Display error message in a popup
+                    }
+                })
+                .catch((error) => {
+                    alert('An error occurred. Please try again later.');
+                    console.error('Error:', error);
+                })
+                .finally(() => {
+                    submitBtn.innerHTML = 'Login'; // Reset button text
+                });
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+      
+        forgotPasswordForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+      
+          const formData = new FormData(forgotPasswordForm);
+      
+          fetch('php/forgot_password.php', {
+            method: 'POST',
+            body: formData,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.status === 'success') {
+                alert('Password reset instructions have been sent to your email.');
+                const modal = bootstrap.Modal.getInstance(document.getElementById('forgotPasswordModal'));
+                modal.hide();
+              } else {
+                alert(data.message);
+              }
+            })
+            .catch((error) => {
+              alert('An error occurred. Please try again later.');
+              console.error('Error:', error);
+            });
+        });
+      });
+  </script>
+</body>
+</html>

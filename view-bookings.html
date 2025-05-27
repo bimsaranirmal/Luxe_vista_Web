@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View All Bookings - LuxeVista Admin</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1a3c40;
+      --secondary: #2c666e;
+      --accent: #f0b67f;
+      --light: #f7f9f9;
+      --gold: #d4af37;
+      --dark-text: #333;
+      --sidebar-width: 240px;
+    }
+    
+    body {
+      background: linear-gradient(135deg, rgba(26, 60, 64, 0.05), rgba(44, 102, 110, 0.05));
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--dark-text);
+      margin: 0;
+      min-height: 100vh;
+    }
+    
+    /* Logo styling */
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2rem;
+      padding: 1rem 0.5rem;
+    }
+    
+    .logo {
+      max-width: 80%;
+      height: auto;
+    }
+    
+    /* Sidebar styling */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      width: var(--sidebar-width);
+      background: linear-gradient(180deg, var(--primary), var(--secondary));
+      padding: 20px 0;
+      color: white;
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .sidebar-item {
+      margin: 8px 20px;
+    }
+    
+    .sidebar-link {
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+    
+    .sidebar-link:hover,
+    .sidebar-link.active {
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+    
+    .sidebar-link.active {
+      background: linear-gradient(90deg, var(--accent), var(--gold));
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+    }
+    
+    .sidebar-icon {
+      margin-right: 12px;
+      width: 20px;
+      text-align: center;
+    }
+    .main-content {
+      margin-left: var(--sidebar-width);
+      padding: 30px;
+      transition: all 0.3s ease;
+    }
+    .page-header {
+      color: var(--primary);
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--accent);
+    }
+    .filters-card {
+        background-color: #fff;
+        padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .page-header h1 { font-size: 2.5rem; font-weight: 700; }
+
+    .booking-card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+        margin-bottom: 25px;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    .booking-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    .booking-card-header {
+        background-color: var(--secondary);
+        color: white;
+        padding: 15px 20px;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        font-size: 1.1rem; /* Slightly smaller for admin view */
+        font-weight: 600;
+    }
+    .booking-card-body {
+        padding: 20px;
+    }
+    .booking-card-body p { margin-bottom: 0.6rem; font-size: 0.9rem; }
+    .booking-card-body strong { color: var(--primary); }
+    .booking-status {
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: inline-block;
+    }
+    .booking-status-confirmed { background-color: #d1e7dd; color: #0f5132; }
+    .booking-status-pending { background-color: #fff3cd; color: #664d03; }
+    .booking-status-cancelled { background-color: #f8d7da; color: #842029; }
+    .booking-status-completed { background-color: #cfe2ff; color: #084298; }
+    .booking-status-upcoming { background-color: #e2e3e5; color: #41464b; }
+    .booking-status-cancellation-requested { background-color: #ffead0; color: #995400; } /* Custom for requested */
+
+    .no-bookings {
+        text-align: center;
+        padding: 50px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+    }
+    .no-bookings i { font-size: 3rem; color: var(--accent); margin-bottom: 20px; }
+
+    .loader-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+    }
+    .spinner-border { width: 3rem; height: 3rem; }
+  </style>
+</head>
+<body>
+    <div class="main-content">
+
+  
+    <div class="page-header">
+      <h1 class="animate__animated animate__fadeInDown">All Bookings</h1>
+      <p class="lead animate__animated animate__fadeInUp animate__delay-0_5s">Manage and review all customer reservations.</p>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="filters-card">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label for="filterBookingKeyword" class="form-label">Keyword (ID, Email, Name)</label>
+                <input type="text" class="form-control form-control-sm" id="filterBookingKeyword" placeholder="Search...">
+            </div>
+            <div class="col-md-3">
+                <label for="filterBookingStatus" class="form-label">Booking Status</label>
+                <select id="filterBookingStatus" class="form-select form-select-sm">
+                    <option value="">All Statuses</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Cancelled">Cancelled</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Upcoming">Upcoming</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Cancellation Requested">Cancellation Requested</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary btn-sm w-100" id="applyBookingFiltersBtn"><i class="fas fa-filter"></i> Apply</button>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-outline-secondary btn-sm w-100" id="clearBookingFiltersBtn"><i class="fas fa-times"></i> Clear</button>
+            </div>
+        </div>
+    </div>
+
+    <main>
+      <div id="bookingsContainer" class="row">
+        <!-- Bookings will be loaded here by JavaScript -->
+        <div class="col-12 text-center loader-container">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading bookings...</span>
+          </div>
+          <p class="mt-2">Loading all bookings...</p>
+        </div>
+      </div>
+    </main>
+  </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const bookingsContainer = document.getElementById('bookingsContainer');
+        const filterKeywordInput = document.getElementById('filterBookingKeyword');
+        const filterStatusSelect = document.getElementById('filterBookingStatus');
+        const applyFiltersBtn = document.getElementById('applyBookingFiltersBtn');
+        const clearFiltersBtn = document.getElementById('clearBookingFiltersBtn');
+
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return str; // Handle non-string inputs gracefully
+            return str.replace(/[&<>"']/g, function (match) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;' /* &apos; is not recommended for HTML */
+                }[match];
+            });
+        }
+
+        function fetchAndRenderBookings(filters = {}) {
+            bookingsContainer.innerHTML = `
+                <div class="col-12 text-center loader-container">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading bookings...</span>
+                  </div>
+                  <p class="mt-2">Loading bookings...</p>
+                </div>`;
+            
+            const queryParams = new URLSearchParams(filters).toString();
+            
+            fetch(`php/get_all_bookings.php?${queryParams}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success' && data.bookings) {
+                        if (data.bookings.length > 0) {
+                            renderBookings(data.bookings);
+                        } else {
+                            bookingsContainer.innerHTML = `
+                                <div class="col-12">
+                                    <div class="no-bookings animate__animated animate__fadeIn">
+                                        <i class="fas fa-folder-open"></i>
+                                        <h2>No Bookings Found</h2>
+                                        <p>There are currently no bookings matching your criteria.</p>
+                                    </div>
+                                </div>`;
+                        }
+                    } else {
+                        bookingsContainer.innerHTML = `<div class="alert alert-danger col-12">${data.message || 'Could not load bookings.'}</div>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching all bookings:', error);
+                    bookingsContainer.innerHTML = '<div class="alert alert-danger col-12">An error occurred while fetching bookings. Please try again later.</div>';
+                });
+        }
+
+        applyFiltersBtn.addEventListener('click', function() {
+            const filters = {
+                keyword: filterKeywordInput.value.trim(),
+                status: filterStatusSelect.value
+            };
+            fetchAndRenderBookings(filters);
+        });
+
+        clearFiltersBtn.addEventListener('click', function() {
+            filterKeywordInput.value = '';
+            filterStatusSelect.value = '';
+            fetchAndRenderBookings();
+        });
+
+            bookingsContainer.addEventListener('click', function(event) {
+            if (event.target.classList.contains('admin-cancel-booking-btn') || event.target.closest('.admin-cancel-booking-btn')) {
+                const button = event.target.classList.contains('admin-cancel-booking-btn') ? event.target : event.target.closest('.admin-cancel-booking-btn');
+                const bookingId = button.dataset.bookingId;
+                if (!confirm(`Are you sure you want to cancel booking #${bookingId}? This action cannot be undone.`)) {
+                    return;
+                }
+
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cancelling...';
+
+                const formData = new FormData();
+                formData.append('booking_id', bookingId);
+
+                fetch('php/admin_cancel_booking.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert(data.message);
+                        // Update UI for the specific card
+                        const statusElement = document.getElementById(`status-booking-${bookingId}`);
+                        if (statusElement) {
+                            statusElement.textContent = 'Cancelled';
+                            statusElement.className = 'booking-status booking-status-cancelled';
+                        }
+                        button.remove(); // Remove the cancel button
+                        // Optionally re-fetch to ensure list consistency if other actions depend on status
+                        // fetchAndRenderBookings({ keyword: filterKeywordInput.value.trim(), status: filterStatusSelect.value });
+                    } else {
+                        alert('Error: ' + data.message);
+                        button.disabled = false;
+                        button.innerHTML = '<i class="fas fa-times-circle"></i> Cancel Booking';
+                    }
+                })
+                .catch(error => {
+                    console.error('Admin cancellation error:', error);
+                    alert('An error occurred. Please try again.');
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-times-circle"></i> Cancel Booking';
+                });
+            }
+        });
+
+        function renderBookings(bookings) {
+            bookingsContainer.innerHTML = ''; // Clear loading spinner
+            bookings.forEach(booking => {
+                const checkIn = new Date(booking.booking_in_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                const checkOut = new Date(booking.booking_out_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                
+                let bookingStatusLower = (booking.booking_status || '').toLowerCase().replace(/\s+/g, '-'); // e.g. "Cancellation Requested" -> "cancellation-requested"
+                let statusClass = 'booking-status-pending'; // Default
+                let statusText = booking.booking_status || 'Pending';
+
+                // Map status to class
+                const statusMap = {
+                    'confirmed': 'booking-status-confirmed',
+                    'cancelled': 'booking-status-cancelled',
+                    'completed': 'booking-status-completed',
+                    'upcoming': 'booking-status-upcoming',
+                    'pending': 'booking-status-pending',
+                    'cancellation-requested': 'booking-status-cancellation-requested'
+                };
+                statusClass = statusMap[bookingStatusLower] || 'booking-status-pending';
+
+                let userInfo = '';
+                
+                    //userInfo = `<p><strong>User:</strong> ${escapeHTML(booking.user_name)} (ID: ${escapeHTML(booking.user_id)})</p>`;
+                    if (booking.user_email) {
+                        userInfo += `<p><strong>Email:</strong> ${escapeHTML(booking.user_email)}</p>`;
+                    
+                } else if (booking.guest_email) {
+                    // Consolidate guest info
+                    userInfo = `<p><strong>Guest Email:</strong> ${escapeHTML(booking.guest_email)}</p>`;
+                    if (booking.guest_phone) {
+                        userInfo += `<p><strong>Guest Phone:</strong> ${escapeHTML(booking.guest_phone)}</p>`;
+                    }
+                } else if (booking.guest_phone) { // If only guest phone is available (no email, no user)
+                    userInfo = `<p><strong>Guest Phone:</strong> ${escapeHTML(booking.guest_phone)}</p>`;
+                }
+
+                let cancelButtonHtml = '';
+                // Show cancel button if status is not already Cancelled or Completed
+                if (bookingStatusLower !== 'cancelled' && bookingStatusLower !== 'completed') {
+                    cancelButtonHtml = `
+                        <button class="btn btn-sm btn-danger mt-2 admin-cancel-booking-btn" data-booking-id="${booking.booking_id}">
+                            <i class="fas fa-times-circle"></i> Cancel Booking
+                        </button>`;
+                }
+
+
+                const cardHtml = `
+                    <div class="col-md-6 col-lg-4 animate__animated animate__fadeInUp">
+                        <div class="booking-card">
+                            <div class="booking-card-header">
+                                Booking ID: #${booking.booking_id}
+                                <span class="float-end fs-6">${booking.room_type || 'N/A'}</span>
+                            </div>
+                            <div class="booking-card-body">
+                                ${userInfo}
+                                <p><strong>Room ID:</strong> ${escapeHTML(booking.room_id)}</p>
+                                <p><strong>Check-in:</strong> ${checkIn}</p>
+                                <p><strong>Check-out:</strong> ${checkOut}</p>
+                                <p><strong>Total Price:</strong> $${parseFloat(booking.total_price).toFixed(2)}</p>
+                                <p><strong>Payment Status:</strong> ${escapeHTML(booking.payment_status) || 'N/A'}</p>
+                                <p><strong>Booking Status:</strong> <span class="booking-status ${statusClass}" id="status-booking-${booking.booking_id}">${escapeHTML(statusText)}</span></p>
+                                <p><strong>Booked On:</strong> ${new Date(booking.booking_created_at).toLocaleDateString()}</p>
+                                ${cancelButtonHtml}
+                                <!-- Admin actions can be added here -->
+                                <!-- e.g., <button class="btn btn-sm btn-info">Edit Status</button> -->
+                            </div>
+                        </div>
+                    </div>`;
+                bookingsContainer.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+
+        // Initial load of bookings
+        fetchAndRenderBookings();
+    });
+  </script>
+</body>
+</html>

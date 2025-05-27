@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add New Room - LuxeVista</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1a3c40;
+      --secondary: #2c666e;
+      --accent: #f0b67f;
+      --light: #f7f9f9;
+      --gold: #d4af37;
+      --error: #e74c3c;
+      --success: #2ecc71;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      background: #fff;
+      color: var(--primary);
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      padding: 30px;
+      max-width: 600px;
+      width: 100%;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .form-group label {
+      font-weight: bold;
+      color: var(--secondary);
+    }
+
+    .form-control, .form-control-file {
+      border: 2px solid var(--secondary);
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-control-file:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 5px var(--accent);
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--gold);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .form-header h2 {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .form-header p {
+      color: var(--secondary);
+      font-size: 1rem;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="form-header">
+      <h2><i class="fas fa-bed"></i> Add New Room</h2>
+      <p>Fill in the details below to add a new room to LuxeVista.</p>
+    </div>
+    <form action="php/add-room.php" method="POST" enctype="multipart/form-data" id="addRoomForm">
+        <div class="form-group">
+          <label for="room_id"><i class="fas fa-id-badge"></i> Room ID</label>
+          <input type="text" name="room_id" class="form-control" placeholder="Enter Room ID" required>
+        </div>
+        <div class="form-group">
+          <label for="room_type"><i class="fas fa-door-open"></i> Room Type</label>
+          <select name="room_type" class="form-control" required>
+            <option value="" disabled selected>Select Room Type</option>
+            <option value="Single">Single</option>
+            <option value="Double">Double</option>
+            <option value="Suite">Suite</option>
+            <option value="Deluxe">Deluxe</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="capacity"><i class="fas fa-users"></i> Capacity</label>
+          <input type="number" name="capacity" class="form-control" placeholder="Enter Capacity" required>
+        </div>
+        <div class="form-group">
+          <label for="description"><i class="fas fa-align-left"></i> Description</label>
+          <textarea name="description" class="form-control" rows="4" placeholder="Enter Room Description" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="price_per_night"><i class="fas fa-dollar-sign"></i> Price Per Night</label>
+          <input type="number" name="price_per_night" class="form-control" placeholder="Enter Price Per Night" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label for="availability"><i class="fas fa-check-circle"></i> Availability</label>
+          <select name="availability" class="form-control" required>
+            <option value="Available">Available</option>
+            <option value="Not Available">Not Available</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="images"><i class="fas fa-images"></i> Upload Images</label>
+          <input type="file" name="images[]" class="form-control-file" multiple accept="image/*" required>
+          <small class="text-muted">You can upload up to 5 images.</small>
+        </div>
+        <button type="submit" class="btn btn-primary w-100"><i class="fas fa-plus-circle"></i> Add Room</button>
+      </form>
+  </div>
+
+  <!-- Success/Error Modal -->
+<div class="modal fade" id="responseModal" tabindex="-1" aria-labelledby="responseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="responseModalLabel">Message</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="responseMessage">
+          <!-- Success or error message will be displayed here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const addRoomForm = document.getElementById('addRoomForm');
+        const responseModal = new bootstrap.Modal(document.getElementById('responseModal'));
+        const responseMessage = document.getElementById('responseMessage');
+        const responseModalLabel = document.getElementById('responseModalLabel');
+      
+        addRoomForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+      
+          const formData = new FormData(addRoomForm);
+          const submitButton = addRoomForm.querySelector('button[type="submit"]');
+          submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+          submitButton.disabled = true;
+      
+          fetch('php/add-room.php', {
+            method: 'POST',
+            body: formData,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.status === 'success') {
+                responseModalLabel.textContent = 'Success';
+                responseMessage.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                addRoomForm.reset(); // Reset the form
+              } else {
+                responseModalLabel.textContent = 'Error';
+                responseMessage.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+              }
+              responseModal.show();
+            })
+            .catch((error) => {
+              responseModalLabel.textContent = 'Error';
+              responseMessage.innerHTML = `<div class="alert alert-danger">An error occurred. Please try again later.</div>`;
+              responseModal.show();
+              console.error('Error:', error);
+            })
+            .finally(() => {
+              submitButton.innerHTML = '<i class="fas fa-plus-circle"></i> Add Room';
+              submitButton.disabled = false;
+            });
+        });
+      });
+  </script>
+</body>
+</html>

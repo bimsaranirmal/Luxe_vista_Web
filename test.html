@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instagram Clone</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.21.2/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #fafafa;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // Sample data
+    const initialPosts = [
+      {
+        id: 1,
+        username: "traveler",
+        userImage: "/api/placeholder/40/40",
+        image: "/api/placeholder/600/600",
+        caption: "Beautiful sunset at the beach! 🌅 #vacation #sunset #beach",
+        likes: 125,
+        timestamp: "2 hours ago",
+        comments: [
+          { id: 1, username: "photography_lover", text: "Amazing shot! 😍", likes: 3 },
+          { id: 2, username: "beach_bum", text: "I need to visit this place!", likes: 1 }
+        ],
+        isLiked: false,
+        isSaved: false,
+      },
+      {
+        id: 2,
+        username: "foodie",
+        userImage: "/api/placeholder/40/40",
+        image: "/api/placeholder/600/600",
+        caption: "Homemade pasta with fresh ingredients 🍝 #foodporn #homecooking",
+        likes: 89,
+        timestamp: "5 hours ago",
+        comments: [
+          { id: 1, username: "chef_mario", text: "Looks delicious! Recipe?", likes: 5 },
+          { id: 2, username: "pasta_lover", text: "I'm hungry now 😋", likes: 2 }
+        ],
+        isLiked: false,
+        isSaved: false,
+      },
+      {
+        id: 3,
+        username: "fitness_guru",
+        userImage: "/api/placeholder/40/40",
+        image: "/api/placeholder/600/600",
+        caption: "Morning workout complete! 💪 #fitness #motivation #healthylifestyle",
+        likes: 210,
+        timestamp: "8 hours ago",
+        comments: [
+          { id: 1, username: "gym_rat", text: "Keep it up! 💯", likes: 7 },
+          { id: 2, username: "newbie_runner", text: "What's your routine?", likes: 1 }
+        ],
+        isLiked: false,
+        isSaved: false,
+      }
+    ];
+
+    const stories = [
+      { id: 1, username: "your_story", userImage: "/api/placeholder/56/56", viewed: false, isYourStory: true },
+      { id: 2, username: "best_friend", userImage: "/api/placeholder/56/56", viewed: false },
+      { id: 3, username: "coworker", userImage: "/api/placeholder/56/56", viewed: false },
+      { id: 4, username: "traveler", userImage: "/api/placeholder/56/56", viewed: true },
+      { id: 5, username: "foodie", userImage: "/api/placeholder/56/56", viewed: true },
+      { id: 6, username: "artist", userImage: "/api/placeholder/56/56", viewed: false },
+      { id: 7, username: "photographer", userImage: "/api/placeholder/56/56", viewed: false },
+    ];
+
+    const suggestions = [
+      { id: 1, username: "adventure_time", userImage: "/api/placeholder/32/32", relation: "Followed by traveler + 3 more" },
+      { id: 2, username: "food_explorer", userImage: "/api/placeholder/32/32", relation: "New to Instagram" },
+      { id: 3, username: "nature_pics", userImage: "/api/placeholder/32/32", relation: "Followed by photography_lover" },
+      { id: 4, username: "tech_news", userImage: "/api/placeholder/32/32", relation: "Followed by 5 people you follow" },
+      { id: 5, username: "fitness_coach", userImage: "/api/placeholder/32/32", relation: "Suggested for you" },
+    ];
+
+    function App() {
+      const [posts, setPosts] = useState(initialPosts);
+      const [activeTab, setActiveTab] = useState("home");
+      const [newComment, setNewComment] = useState("");
+      const [showNewPost, setShowNewPost] = useState(false);
+      
+      const handleLike = (postId) => {
+        setPosts(posts.map(post => {
+          if (post.id === postId) {
+            return { 
+              ...post, 
+              isLiked: !post.isLiked,
+              likes: post.isLiked ? post.likes - 1 : post.likes + 1
+            };
+          }
+          return post;
+        }));
+      };
+      
+      const handleSave = (postId) => {
+        setPosts(posts.map(post => {
+          if (post.id === postId) {
+            return { ...post, isSaved: !post.isSaved };
+          }
+          return post;
+        }));
+      };
+      
+      const handleCommentSubmit = (postId, e) => {
+        e.preventDefault();
+        if (newComment.trim() === "") return;
+        
+        setPosts(posts.map(post => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              comments: [
+                ...post.comments,
+                {
+                  id: post.comments.length + 1,
+                  username: "current_user",
+                  text: newComment,
+                  likes: 0
+                }
+              ]
+            };
+          }
+          return post;
+        }));
+        
+        setNewComment("");
+      };
+      
+      return (
+        <div className="min-h-screen flex flex-col">
+          {/* Header */}
+          <header className="bg-white border-b border-gray-300 fixed top-0 w-full z-10">
+            <div className="container mx-auto px-4 py-2 flex justify-between items-center">
+              <div className="text-xl font-bold">Instagram Clone</div>
+              <div className="flex items-center space-x-4">
+                <button 
+                  onClick={() => setShowNewPost(true)}
+                  className="focus:outline-none"
+                >
+                  <i className="far fa-plus-square text-xl"></i>
+                </button>
+                <button className="focus:outline-none">
+                  <i className="far fa-heart text-xl"></i>
+                </button>
+                <button className="focus:outline-none">
+                  <i className="far fa-paper-plane text-xl"></i>
+                </button>
+              </div>
+            </div>
+          </header>
+
+          {/* Main Content */}
+          <main className="container mx-auto pt-16 pb-16 px-4 md:flex">
+            {/* Feed */}
+            <div className="md:w-8/12">
+              {/* Stories */}
+              <div className="bg-white border border-gray-300 rounded mb-4 p-4 overflow-x-auto">
+                <div className="flex space-x-4">
+                  {stories.map(story => (
+                    <div key={story.id} className="flex flex-col items-center">
+                      <div className={`w-14 h-14 rounded-full flex items-center justify-center ${story.viewed ? 'bg-gray-200' : 'bg-gradient-to-tr from-yellow-400 to-pink-600'}`}>
+                        <div className="bg-white p-0.5 rounded-full">
+                          <img src={story.userImage} alt={story.username} className="rounded-full w-12 h-12" />
+                        </div>
+                      </div>
+                      <span className="text-xs mt-1 truncate w-14 text-center">{story.username}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Posts */}
+              {posts.map(post => (
+                <div key={post.id} className="bg-white border border-gray-300 rounded mb-4">
+                  {/* Post Header */}
+                  <div className="flex items-center justify-between p-3">
+                    <div className="flex items-center">
+                      <img src={post.userImage} alt={post.username} className="rounded-full w-8 h-8 mr-2" />
+                      <span className="font-semibold">{post.username}</span>
+                    </div>
+                    <button className="focus:outline-none">
+                      <i className="fas fa-ellipsis-h"></i>
+                    </button>
+                  </div>
+                  
+                  {/* Post Image */}
+                  <img src={post.image} alt="Post" className="w-full" />
+                  
+                  {/* Post Actions */}
+                  <div className="p-3">
+                    <div className="flex justify-between">
+                      <div className="flex space-x-4">
+                        <button 
+                          onClick={() => handleLike(post.id)} 
+                          className="focus:outline-none"
+                        >
+                          <i className={`${post.isLiked ? 'fas text-red-500' : 'far'} fa-heart text-xl`}></i>
+                        </button>
+                        <button className="focus:outline-none">
+                          <i className="far fa-comment text-xl"></i>
+                        </button>
+                        <button className="focus:outline-none">
+                          <i className="far fa-paper-plane text-xl"></i>
+                        </button>
+                      </div>
+                      <button 
+                        onClick={() => handleSave(post.id)}
+                        className="focus:outline-none"
+                      >
+                        <i className={`${post.isSaved ? 'fas' : 'far'} fa-bookmark text-xl`}></i>
+                      </button>
+                    </div>
+                    
+                    <div className="mt-2">
+                      <span className="font-semibold">{post.likes.toLocaleString()} likes</span>
+                    </div>
+                    
+                    <div className="mt-1">
+                      <span><strong>{post.username}</strong> {post.caption}</span>
+                    </div>
+                    
+                    {post.comments.length > 0 && (
+                      <div className="mt-2">
+                        {post.comments.length > 2 && (
+                          <button className="text-gray-500 text-sm mb-1">
+                            View all {post.comments.length} comments
+                          </button>
+                        )}
+                        {post.comments.slice(-2).map(comment => (
+                          <div key={comment.id} className="text-sm">
+                            <strong>{comment.username}</strong> {comment.text}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    <div className="text-gray-400 text-xs mt-1">
+                      {post.timestamp}
+                    </div>
+                  </div>
+                  
+                  {/* Comment Form */}
+                  <form 
+                    onSubmit={(e) => handleCommentSubmit(post.id, e)}
+                    className="border-t border-gray-300 p-3 flex"
+                  >
+                    <input
+                      type="text"
+                      placeholder="Add a comment..."
+                      className="flex-grow bg-transparent focus:outline-none"
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                    />
+                    <button 
+                      type="submit"
+                      className={`font-semibold ${newComment.trim() ? 'text-blue-500' : 'text-blue-300'}`}
+                      disabled={!newComment.trim()}
+                    >
+                      Post
+                    </button>
+                  </form>
+                </div>
+              ))}
+            </div>
+            
+            {/* Sidebar */}
+            <div className="hidden md:block md:w-4/12 md:pl-8">
+              <div className="fixed w-80">
+                {/* User Profile */}
+                <div className="flex items-center my-6">
+                  <img src="/api/placeholder/56/56" alt="user" className="rounded-full w-14 h-14 mr-4" />
+                  <div>
+                    <div className="font-semibold">current_user</div>
+                    <div className="text-gray-500">Current User</div>
+                  </div>
+                  <button className="ml-auto text-blue-500 font-semibold text-xs">Switch</button>
+                </div>
+                
+                {/* Suggestions */}
+                <div className="my-4">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-gray-500 font-semibold">Suggestions For You</span>
+                    <button className="text-xs font-semibold">See All</button>
+                  </div>
+                  
+                  {suggestions.map(suggestion => (
+                    <div key={suggestion.id} className="flex items-center mb-3">
+                      <img src={suggestion.userImage} alt={suggestion.username} className="rounded-full w-8 h-8 mr-3" />
+                      <div className="flex-grow">
+                        <div className="font-semibold text-sm">{suggestion.username}</div>
+                        <div className="text-gray-500 text-xs">{suggestion.relation}</div>
+                      </div>
+                      <button className="text-blue-500 text-xs font-semibold">Follow</button>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Footer */}
+                <div className="text-gray-400 text-xs mt-8">
+                  <div className="mb-4">
+                    <a href="#" className="mr-2">About</a>
+                    <a href="#" className="mr-2">Help</a>
+                    <a href="#" className="mr-2">Press</a>
+                    <a href="#" className="mr-2">API</a>
+                    <a href="#" className="mr-2">Jobs</a>
+                    <a href="#" className="mr-2">Privacy</a>
+                    <a href="#" className="mr-2">Terms</a>
+                    <a href="#" className="mr-2">Locations</a>
+                    <a href="#" className="mr-2">Language</a>
+                  </div>
+                  <div>© 2025 INSTAGRAM CLONE</div>
+                </div>
+              </div>
+            </div>
+          </main>
+          
+          {/* Bottom Navigation (Mobile) */}
+          <nav className="bg-white border-t border-gray-300 fixed bottom-0 w-full z-10 md:hidden">
+            <div className="container mx-auto px-6">
+              <div className="flex justify-between py-3">
+                <button 
+                  onClick={() => setActiveTab("home")}
+                  className="focus:outline-none"
+                >
+                  <i className={`${activeTab === "home" ? "fas" : "far"} fa-home text-xl`}></i>
+                </button>
+                <button 
+                  onClick={() => setActiveTab("search")}
+                  className="focus:outline-none"
+                >
+                  <i className={`${activeTab === "search" ? "fas" : "far"} fa-search text-xl`}></i>
+                </button>
+                <button 
+                  onClick={() => setShowNewPost(true)}
+                  className="focus:outline-none"
+                >
+                  <i className="far fa-plus-square text-xl"></i>
+                </button>
+                <button 
+                  onClick={() => setActiveTab("activity")}
+                  className="focus:outline-none"
+                >
+                  <i className={`${activeTab === "activity" ? "fas" : "far"} fa-heart text-xl`}></i>
+                </button>
+                <button 
+                  onClick={() => setActiveTab("profile")}
+                  className="focus:outline-none"
+                >
+                  <img src="/api/placeholder/24/24" alt="Profile" className="rounded-full w-6 h-6" />
+                </button>
+              </div>
+            </div>
+          </nav>
+          
+          {/* New Post Modal */}
+          {showNewPost && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+              <div className="bg-white rounded-lg max-w-xl w-full">
+                <div className="border-b border-gray-300 p-4 text-center relative">
+                  <h2 className="font-semibold">Create New Post</h2>
+                  <button 
+                    onClick={() => setShowNewPost(false)} 
+                    className="absolute right-4 top-4 focus:outline-none"
+                  >
+                    <i className="fas fa-times"></i>
+                  </button>
+                </div>
+                
+                <div className="p-6 flex flex-col items-center justify-center h-80">
+                  <i className="far fa-images text-6xl text-gray-300 mb-4"></i>
+                  <p className="text-lg font-semibold mb-4">Drag photos and videos here</p>
+                  <button className="bg-blue-500 text-white px-4 py-2 rounded font-semibold">
+                    Select from computer
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
