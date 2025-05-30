@@ -334,6 +334,22 @@
             <button class="btn btn-action" data-bs-toggle="modal" data-bs-target="#reviewModal">Write Review</button>
           </div>
         </div>
+        <div class="col-lg-4 col-md-6 animate__animated animate__fadeInUp animate__delay-3s">
+  <div class="dashboard-card">
+    <div class="card-icon"><i class="fas fa-concierge-bell"></i></div>
+    <h4>Our Services</h4>
+    <p>Explore the premium services we offer to make your stay unforgettable.</p>
+    <a href="all_services.html" class="btn btn-action">View Services</a>
+  </div>
+</div>
+<div class="col-lg-4 col-md-6 animate__animated animate__fadeInUp animate__delay-3s">
+  <div class="dashboard-card">
+    <div class="card-icon"><i class="fas fa-cogs"></i></div>
+    <h4>My Services Bookings</h4>
+    <p>Explore the premium services we offer to make your stay unforgettable.</p>
+    <a href="booked_services.html" class="btn btn-action">View Services</a>
+  </div>
+</div>
          <div class="col-lg-4 col-md-6 animate__animated animate__fadeInUp animate__delay-2s">
           <div class="dashboard-card">
             <div class="card-icon"><i class="fas fa-tags"></i></div>
@@ -665,10 +681,10 @@
 
           // Use already fetched user data to pre-fill name/email
           if (currentUserId) { // Check if user is logged in (currentUserId would be set)
-            if (currentUserName) {
-              guestNameInput.value = currentUserName;
-            } else if (currentUserEmail) {
-              guestNameInput.value = currentUserEmail; // Fallback to email if name not present
+            if (currentUserEmail) {
+              guestNameInput.value = currentUserEmail;
+            } else if (currentUserName) {
+              guestNameInput.value = currentUserName; // Fallback to email if name not present
             }
             guestNameInput.readOnly = true;
           } else {
@@ -677,6 +693,11 @@
               }
         });
       }
+
+      function truncateText(text, maxLength) {
+    if (text.length <= maxLength) return text;
+    return text.substr(0, maxLength) + '...';
+  }
 
       // Handle Review Form Submission
       const reviewForm = document.getElementById('reviewForm'); // Get the form element again

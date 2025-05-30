@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Services - LuxeVista Admin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        :root {
+      --primary: #1a3c40;
+      --secondary: #2c666e;
+      --accent: #f0b67f;
+      --light: #f7f9f9;
+      --gold: #d4af37;
+      --dark-text: #333;
+      --sidebar-width: 240px;
+    }
+    
+    body {
+      background: linear-gradient(135deg, rgba(26, 60, 64, 0.05), rgba(44, 102, 110, 0.05));
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--dark-text);
+      margin: 0;
+      min-height: 100vh;
+    }
+    
+    /* Logo styling */
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2rem;
+      padding: 1rem 0.5rem;
+    }
+    
+    .logo {
+      max-width: 80%;
+      height: auto;
+    }
+    
+    /* Sidebar styling */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      width: var(--sidebar-width);
+      background: linear-gradient(180deg, var(--primary), var(--secondary));
+      padding: 20px 0;
+      color: white;
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .sidebar-item {
+      margin: 8px 20px;
+    }
+    
+    .sidebar-link {
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+    
+    .sidebar-link:hover,
+    .sidebar-link.active {
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+    
+    .sidebar-link.active {
+      background: linear-gradient(90deg, var(--accent), var(--gold));
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+    }
+    
+    .sidebar-icon {
+      margin-right: 12px;
+      width: 20px;
+      text-align: center;
+    }
+    
+    /* Main content styling */
+    .main-content {
+      margin-left: var(--sidebar-width);
+      padding: 30px;
+      transition: all 0.3s ease;
+    }
+        .page-header {
+            color: var(--primary);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--accent);
+        }
+        .page-header h1 { font-size: 2.5rem; font-weight: 700; }
+        .form-card {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            padding: 25px 30px;
+            margin-bottom: 40px;
+        }
+        .form-label { font-weight: bold; color: var(--secondary); margin-bottom: 0.5rem; }
+        .btn-submit-service { background-color: var(--accent); border-color: var(--accent); color: var(--primary); }
+        .btn-submit-service:hover { background-color: var(--gold); border-color: var(--gold); color: var(--primary); }
+        .form-text { font-size: 0.875em; }
+
+        .services-list-section { margin-top: 50px; }
+        .service-card {
+            background-color: #fff;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            display: flex; /* Added for consistent height if needed */
+            flex-direction: column; /* Added for consistent height if needed */
+        }
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+        }
+        .service-card .card-header {
+            background-color: var(--secondary);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.25rem;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .service-card .card-body {
+            padding: 1.25rem;
+            flex-grow: 1; /* Added for consistent height if needed */
+        }
+        .service-card .card-body .service-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        .service-card .card-body .service-category {
+            font-size: 0.9rem;
+            color: #777;
+            background-color: #e9ecef;
+            padding: 0.2rem 0.6rem;
+            border-radius: 0.25rem;
+            display: inline-block;
+            margin-bottom: 0.75rem;
+        }
+        .service-card .service-image-container {
+            height: 180px; /* Adjust as needed */
+            overflow: hidden;
+            border-bottom: 1px solid #eee;
+        }
+        .service-card .service-image-container img { width: 100%; height: 100%; object-fit: cover; }
+        .service-card .card-footer {
+            background-color: #f8f9fa;
+            font-size: 0.85em;
+            color: #6c757d;
+            padding: 0.75rem 1.25rem;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+        .filter-card {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            padding: 20px 25px;
+            margin-bottom: 30px;
+        }
+        .loader-container { display: flex; justify-content: center; align-items: center; min-height: 150px; width: 100%;}
+        .loader { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="animate__animated animate__fadeInDown"><i class="fas fa-concierge-bell"></i> Manage Services</h1>
+        </div>
+
+        <div class="form-card animate__animated animate__fadeInUp">
+            <h3><i class="fas fa-plus-circle text-primary"></i> Add New Service</h3>
+            <hr>
+            <form id="addServiceForm">
+                <div class="mb-3">
+                    <label for="serviceName" class="form-label">Service Name</label>
+                    <input type="text" class="form-control" id="serviceName" name="name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="serviceDescription" class="form-label">Description</label>
+                    <textarea class="form-control" id="serviceDescription" name="description" rows="3" required></textarea>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="servicePrice" class="form-label">Price ($)</label>
+                        <input type="number" class="form-control" id="servicePrice" name="price" step="0.01" min="0" placeholder="e.g., 50.00 (Optional)">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="serviceCategory" class="form-label">Category</label>
+                        <input type="text" class="form-control" id="serviceCategory" name="category" placeholder="e.g., Spa, Dining, Room Service (Optional)">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="serviceIcon" class="form-label">Icon Class (Font Awesome)</label>
+                    <input type="text" class="form-control" id="serviceIcon" name="icon_class" placeholder="e.g., fas fa-spa (Optional)">
+                    <small class="form-text text-muted">Find icons at <a href="https://fontawesome.com/icons" target="_blank">Font Awesome</a>. Use full class name.</small>
+                </div>
+                <div class="mb-3">
+                    <label for="serviceImage" class="form-label">Service Image (Optional)</label>
+                    <input type="file" class="form-control" id="serviceImage" name="image" accept="image/*">
+                    <small class="form-text text-muted">Upload an image for the service.</small>
+                </div>
+                 <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="serviceIsActive" name="is_active" value="1" checked>
+                    <label class="form-check-label" for="serviceIsActive">Activate this service</label>
+                </div>
+                <button type="submit" class="btn btn-submit-service"><i class="fas fa-save"></i> Save Service</button>
+            </form>
+            <div id="serviceFormMessage" class="mt-3"></div>
+        </div>
+
+        <div class="services-list-section animate__animated animate__fadeInUp animate__delay-1s">
+            <h3><i class="fas fa-list-alt text-primary"></i> Existing Services</h3>
+            
+            <!-- Filters Form -->
+            <div class="filter-card my-4">
+                <h5 class="mb-3" style="color: var(--primary);"><i class="fas fa-filter me-2"></i>Filter Services</h5>
+                <form id="filterServicesForm">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="filterKeyword" class="form-label">Keyword (Name/Desc)</label>
+                            <input type="text" id="filterKeyword" name="keyword" class="form-control form-control-sm" placeholder="e.g., Spa, Massage">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="filterCategory" class="form-label">Category</label>
+                            <input type="text" id="filterCategory" name="category" class="form-control form-control-sm" placeholder="e.g., Wellness">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="filterMinPrice" class="form-label">Min Price</label>
+                            <input type="number" id="filterMinPrice" name="min_price" class="form-control form-control-sm" min="0" step="1">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="filterMaxPrice" class="form-label">Max Price</label>
+                            <input type="number" id="filterMaxPrice" name="max_price" class="form-control form-control-sm" min="0" step="1">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="filterStatus" class="form-label">Status</label>
+                            <select id="filterStatus" name="is_active_status" class="form-select form-select-sm">
+                                <option value="all" selected>All Statuses</option>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12 text-end">
+                            <button type="button" id="applyServiceFiltersBtn" class="btn btn-primary btn-sm"><i class="fas fa-search me-1"></i> Apply</button>
+                            <button type="button" id="resetServiceFiltersBtn" class="btn btn-outline-secondary btn-sm"><i class="fas fa-undo me-1"></i> Reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div id="existingServicesContainer" class="row">
+                <div class="col-12 loader-container">
+                    <div class="loader"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Service Modal -->
+    <div class="modal fade" id="updateServiceModal" tabindex="-1" aria-labelledby="updateServiceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: var(--primary); color: var(--light);">
+                    <h5 class="modal-title" id="updateServiceModalLabel">Update Service</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateServiceForm">
+                        <input type="hidden" id="updateServiceId" name="service_id">
+                        <div class="mb-3">
+                            <label for="updateServiceName" class="form-label">Service Name</label>
+                            <input type="text" class="form-control" id="updateServiceName" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="updateServiceDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="updateServiceDescription" name="description" rows="3" required></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="updateServicePrice" class="form-label">Price ($)</label>
+                                <input type="number" class="form-control" id="updateServicePrice" name="price" step="0.01" min="0">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="updateServiceCategory" class="form-label">Category</label>
+                                <input type="text" class="form-control" id="updateServiceCategory" name="category">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="updateServiceIcon" class="form-label">Icon Class (Font Awesome)</label>
+                            <input type="text" class="form-control" id="updateServiceIcon" name="icon_class">
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="updateServiceIsActive" name="is_active" value="1">
+                            <label class="form-check-label" for="updateServiceIsActive">Service is Active</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update Service</button>
+                    </form>
+                    <div id="updateServiceFormMessage" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('addServiceForm').addEventListener('submit', function(e) {
+            const addServiceForm = document.getElementById('addServiceForm'); // Renamed form to addServiceForm for clarity
+            const serviceFormMessage = document.getElementById('serviceFormMessage');
+            const submitButton = addServiceForm.querySelector('button[type="submit"]');
+            e.preventDefault();
+            const form = this;
+            const formData = new FormData(form);
+            const formMessage = document.getElementById('serviceFormMessage');
+            
+
+            // Ensure is_active is sent even if unchecked
+            if (!formData.has('is_active')) {
+                formData.append('is_active', '0');
+            }
+
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            formMessage.innerHTML = '';
+
+            fetch('php/add_service.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    formMessage.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                    form.reset();
+                    fetchAndRenderServices(); 
+                } else {
+                    formMessage.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error adding service:', error);
+                formMessage.innerHTML = '<div class="alert alert-danger">An error occurred. Please try again.</div>';
+            })
+            .finally(() => {
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-save"></i> Save Service';
+            });
+        });
+
+        const existingServicesContainer = document.getElementById('existingServicesContainer');
+        let allServicesData = []; // To store fetched services for easy access
+        let updateServiceModalInstance = null;
+        const filterServicesFormEl = document.getElementById('filterServicesForm');
+        const applyServiceFiltersBtn = document.getElementById('applyServiceFiltersBtn');
+        const resetServiceFiltersBtn = document.getElementById('resetServiceFiltersBtn');
+
+
+        function fetchAndRenderServices(params = {}) {
+            existingServicesContainer.innerHTML = '<div class="col-12 loader-container"><div class="loader"></div></div>';
+
+            const queryParams = new URLSearchParams(params).toString();
+
+            fetch(`php/get_all_services.php?${queryParams}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success' && data.services) {
+                        allServicesData = data.services; // Store for later use
+                        renderServices(data.services);
+                    } else if (data.status === 'success' && data.services.length === 0) {
+                         existingServicesContainer.innerHTML = `<div class="col-12"><div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle"></i> No services found. Add one using the form above.
+                         </div></div>`;
+                    } else {
+                        existingServicesContainer.innerHTML = `<div class="alert alert-danger col-12">${data.message || 'Could not load services.'}</div>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching services:', error);
+                    existingServicesContainer.innerHTML = '<div class="alert alert-danger col-12">An error occurred while fetching services. Please try again.</div>';
+                });
+        }
+
+        if (applyServiceFiltersBtn) {
+            applyServiceFiltersBtn.addEventListener('click', () => {
+                const formData = new FormData(filterServicesFormEl);
+                const params = {};
+                for (let [key, value] of formData.entries()) {
+                    if (value) { // Only add if value is not empty
+                        params[key] = value;
+                    }
+                }
+                fetchAndRenderServices(params);
+            });
+        }
+
+        if (resetServiceFiltersBtn) {
+            resetServiceFiltersBtn.addEventListener('click', () => {
+                filterServicesFormEl.reset();
+                fetchAndRenderServices(); // Fetch all
+            });
+        }
+
+        function renderServices(services) {
+            existingServicesContainer.innerHTML = ''; // Clear loader or previous content
+            if (services.length === 0) {
+                existingServicesContainer.innerHTML = `<div class="col-12"><div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle"></i> No services found. Add one using the form above.
+                    </div></div>`;
+                return;
+            }
+
+            services.forEach(service => {
+                const priceDisplay = service.price ? `Price: <span class="service-price">$${parseFloat(service.price).toFixed(2)}</span>` : '<span class="text-muted">Price not set</span>';
+                const categoryDisplay = service.category ? `<p class="service-category">${escapeHTML(service.category)}</p>` : '';
+                const iconDisplay = service.icon_class ? `<i class="${escapeHTML(service.icon_class)} me-2"></i>` : '<i class="fas fa-concierge-bell me-2"></i>'; // Default icon
+                const statusText = parseInt(service.is_active) === 1 ? 'Active' : 'Inactive';
+                const statusClass = parseInt(service.is_active) === 1 ? 'text-success' : 'text-danger';
+                
+                let imageHtml = '';
+                if (service.image_path) {
+                    imageHtml = `<div class="service-image-container"><img src="${escapeHTML(service.image_path)}" alt="${escapeHTML(service.name)}"></div>`;
+                }
+
+                const serviceCardHtml = `
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card service-card h-100">
+                            ${imageHtml}
+                            <div class="card-header">
+                                ${iconDisplay}
+                                ${escapeHTML(service.name)}
+                            </div>
+                            <div class="card-body">
+                                ${categoryDisplay}
+                                <p>${priceDisplay}</p>
+                                <p class="card-text small">${escapeHTML(service.description)}</p>
+                            </div>
+                            <div class="card-footer">
+                                Status: <strong class="${statusClass}">${statusText}</strong>
+                                <div class="float-end">
+                                    <button class="btn btn-sm btn-outline-warning me-1 change-status-btn" data-id="${service.service_id}" data-current-status="${service.is_active}" title="${parseInt(service.is_active) === 1 ? 'Deactivate' : 'Activate'}">
+                                        <i class="fas ${parseInt(service.is_active) === 1 ? 'fa-toggle-on' : 'fa-toggle-off'}"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary me-1 edit-service-btn" data-id="${service.service_id}" title="Edit"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-outline-danger delete-service-btn" data-id="${service.service_id}" title="Delete"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                existingServicesContainer.insertAdjacentHTML('beforeend', serviceCardHtml);
+            });
+        }
+        
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return str;
+            return str.replace(/[&<>"']/g, function (match) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[match];
+            });
+        }
+
+        // Event delegation for dynamically added buttons
+        existingServicesContainer.addEventListener('click', function(event) {
+            const target = event.target.closest('button');
+            if (!target) return;
+
+            const serviceId = target.dataset.id;
+
+            if (target.classList.contains('change-status-btn')) {
+                const currentStatus = target.dataset.currentStatus;
+                handleChangeServiceStatus(serviceId, currentStatus, target);
+            } else if (target.classList.contains('edit-service-btn')) {
+                handleEditService(serviceId);
+            } else if (target.classList.contains('delete-service-btn')) {
+                handleDeleteService(serviceId);
+            }
+        });
+
+        function handleChangeServiceStatus(serviceId, currentStatus, buttonElement) {
+            const newStatus = parseInt(currentStatus) === 1 ? 0 : 1;
+            const originalIcon = buttonElement.innerHTML;
+            buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            buttonElement.disabled = true;
+
+            fetch('php/update_service_status.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ service_id: serviceId, is_active: newStatus })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    fetchAndRenderServices(); // Refresh the list to show updated status
+                } else {
+                    alert('Error changing status: ' + data.message);
+                    buttonElement.innerHTML = originalIcon; // Revert button on error
+                }
+            })
+            .catch(error => {
+                console.error('Error changing status:', error);
+                alert('An error occurred while changing status.');
+                buttonElement.innerHTML = originalIcon; // Revert button on error
+            })
+            .finally(() => {
+                 buttonElement.disabled = false; // Re-enable after fetch, success or fail (unless list re-renders)
+            });
+        }
+
+        function handleEditService(serviceId) {
+            const service = allServicesData.find(s => s.service_id == serviceId);
+            if (!service) {
+                alert('Service details not found.');
+                return;
+            }
+
+            document.getElementById('updateServiceId').value = service.service_id;
+            document.getElementById('updateServiceName').value = service.name;
+            document.getElementById('updateServiceDescription').value = service.description;
+            document.getElementById('updateServicePrice').value = service.price || '';
+            document.getElementById('updateServiceCategory').value = service.category || '';
+            document.getElementById('updateServiceIcon').value = service.icon_class || '';
+            document.getElementById('updateServiceIsActive').checked = parseInt(service.is_active) === 1;
+            
+            document.getElementById('updateServiceFormMessage').innerHTML = '';
+
+            if (!updateServiceModalInstance) {
+                updateServiceModalInstance = new bootstrap.Modal(document.getElementById('updateServiceModal'));
+            }
+            updateServiceModalInstance.show();
+        }
+
+        document.getElementById('updateServiceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = this;
+            const formData = new FormData(form);
+            const formMessage = document.getElementById('updateServiceFormMessage');
+            const submitButton = form.querySelector('button[type="submit"]');
+
+            if (!formData.has('is_active')) { // If checkbox is unchecked, it's not in FormData
+                formData.append('is_active', '0');
+            }
+
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+            formMessage.innerHTML = '';
+
+            fetch('php/update_service.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    formMessage.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                    fetchAndRenderServices(); // Refresh list
+                    setTimeout(() => {
+                        if (updateServiceModalInstance) updateServiceModalInstance.hide();
+                    }, 1500);
+                } else {
+                    formMessage.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error updating service:', error);
+                formMessage.innerHTML = '<div class="alert alert-danger">An error occurred. Please try again.</div>';
+            })
+            .finally(() => {
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-save"></i> Update Service';
+            });
+        });
+
+        function handleDeleteService(serviceId) {
+            if (!confirm(`Are you sure you want to delete service ID ${serviceId}? This action cannot be undone.`)) {
+                return;
+            }
+            fetch('php/delete_service.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ service_id: serviceId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                    fetchAndRenderServices(); // Refresh the list
+                } else {
+                    alert('Error deleting service: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting service:', error);
+                alert('An error occurred while deleting the service.');
+            });
+        }
+
+        // Initial load of services
+        fetchAndRenderServices();
+    </script>
+</body>
+</html>

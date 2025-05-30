@@ -587,6 +587,9 @@
             <a class="nav-link" href="#rooms">Rooms</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" href="#services">Services</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="#contact">Contact</a>
           </li>
           <li class="nav-item ms-lg-3">
@@ -674,6 +677,37 @@
         <div class="loader-container">
           <div class="loader"></div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section class="rooms-section bg-light" id="services"> <!-- Re-using rooms-section style, changed background -->
+    <div class="container">
+      <div class="rooms-title"> <!-- Re-using rooms-title style -->
+        <h2 class="section-title">Our Exclusive Services</h2>
+        <p>Enhance your stay with our premium services, designed for your comfort and convenience.</p>
+      </div>
+
+      <div id="servicesCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="7000">
+        <div class="carousel-inner" id="servicesContainer">
+          <!-- Loader will be here initially, then replaced by carousel items -->
+          <div class="carousel-item active"> <!-- Initial active item for loader -->
+            <div class="d-flex justify-content-center align-items-center" style="min-height: 400px;"> <!-- Adjust min-height as needed -->
+              <div class="loader-container">
+                <div class="loader"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#servicesCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true" style="background-color: rgba(0,0,0,0.3); border-radius: 50%;"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#servicesCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true" style="background-color: rgba(0,0,0,0.3); border-radius: 50%;"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
       </div>
     </div>
   </section>
@@ -820,6 +854,7 @@
       // Fetch rooms data
       fetchRooms();
       fetchReviews(); // Fetch reviews on page load
+      fetchServices(); // Fetch services on page load
     });
     
       function fetchRooms() {
@@ -860,6 +895,27 @@ function fetchReviews() {
     .catch(error => {
       reviewsContainer.innerHTML = 
         '<div class="col-12 text-center"><p>Failed to load reviews. Please try again later.</p>' +
+        '<p class="text-muted">Error details: ' + error.message + '</p></div>';
+    });
+}
+
+function fetchServices() {
+  const servicesContainer = document.getElementById('servicesContainer');
+  if (!servicesContainer) return; // Exit if container not found
+
+  fetch('php/get_services.php') // This script will output HTML for services
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(html => {
+      servicesContainer.innerHTML = html;
+    })
+    .catch(error => {
+      servicesContainer.innerHTML = 
+        '<div class="col-12 text-center"><p>Failed to load services. Please try again later.</p>' +
         '<p class="text-muted">Error details: ' + error.message + '</p></div>';
     });
 }

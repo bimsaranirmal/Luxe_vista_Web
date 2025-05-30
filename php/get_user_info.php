@@ -74,6 +74,18 @@ if (isset($_SESSION['user_id'])) {
                         $booking_types .= "s";
                     }
 
+                    // Filter by booking_in_date range
+                    if (!empty($_GET['booking_date_from'])) {
+                        $booking_conditions .= " AND b.booking_in_date >= ?";
+                        $booking_params[] = $_GET['booking_date_from'];
+                        $booking_types .= "s";
+                    }
+                    if (!empty($_GET['booking_date_to'])) {
+                        $booking_conditions .= " AND b.booking_in_date <= ?";
+                        $booking_params[] = $_GET['booking_date_to'];
+                        $booking_types .= "s";
+                    }
+
                     // Now fetch bookings for this user using their actual user_id (integer)
                     $booking_sql = "SELECT b.booking_id, b.room_id, b.booking_in_date, b.booking_out_date, 
                                            b.total_price, b.payment_status, b.booking_status, r.room_type 

@@ -4,13 +4,10 @@ header('Content-Type: application/json');
 
 $response = ['status' => 'error', 'message' => 'An unknown error occurred.'];
 
-require 'config.php'; // This will die if connection fails in config.php, before headers are sent.
-// It's possible config.php died before this point if DB connection failed there.
-// If $conn is not set or has an error, it means config.php had an issue
-// but somehow didn't die, or this script is reached despite a die (less likely).
+require 'config.php'; 
+
 if (!isset($conn) || !$conn) {
-    // This case implies $conn wasn't even initialized in config.php,
-    // or config.php was modified to not die and $conn is null.
+
     $response['message'] = 'Database connection object not available. Check config.php.';
     // Attempt to send JSON response even if headers were already sent by config.php's die()
     echo json_encode($response);

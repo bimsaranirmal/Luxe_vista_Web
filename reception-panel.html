@@ -27,17 +27,6 @@
       background: #f7f9f9;
     }
 
-    /* Sidebar styling */
-    .sidebar {
-      width: var(--sidebar-width);
-      background: linear-gradient(180deg, var(--primary), var(--secondary));
-      color: white;
-      display: flex;
-      flex-direction: column;
-      padding: 20px 0;
-      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
-    }
-
     .logo-container {
       text-align: center;
       margin-bottom: 2rem;
@@ -46,6 +35,7 @@
     .logo {
       max-width: 80%;
       height: auto;
+      flex-shrink: 0; /* Prevent logo container from shrinking */
     }
 
    /* Sidebar styling */
@@ -61,12 +51,19 @@
     box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
     z-index: 1000;
     transition: all 0.3s ease;
+    display: flex; /* Make sidebar a flex container */
+    flex-direction: column; /* Arrange children (logo, menu) vertically */
   }
   
   .sidebar-menu {
     list-style: none;
     padding: 0;
     margin: 0;
+  }
+  .sidebar-menu { /* Added from admin-sidebar for scrollability */
+    flex-grow: 1; /* Allow the menu to take up available vertical space */
+    overflow-y: auto; /* Enable vertical scrolling if content overflows */
+    padding-bottom: 20px; /* Add some padding at the bottom of the scrollable area */
   }
   
   .sidebar-item {
@@ -194,6 +191,19 @@
         <a href="promotions.html" class="sidebar-link" target="contentFrame">
           <i class="fas fa-tags sidebar-icon"></i>
           <span>promotions</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a href="view-service_bookings.html" class="sidebar-link" target="contentFrame"> <!-- Ensure this was the intended old link or update as needed -->
+          <i class="fas fa-calendar-check sidebar-icon"></i>
+          <span>Service Bookings</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a href="all_admin_services.html" class="sidebar-link" target="contentFrame">
+          <i class="fas fa-concierge-bell sidebar-icon"></i>
+          <span>Book Services</span>
         </a>
       </li>
       <li class="sidebar-item" style="margin-top: 50px;">

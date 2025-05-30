@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore Our Services - LuxeVista</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css" />
+  <style>
+    :root {
+      --primary: #1a3c40;
+      --secondary: #2c666e;
+      --accent: #f0b67f;
+      --light: #f7f9f9;
+      --gold: #d4af37;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      background-color: var(--light);
+    }
+    .navbar { background-color: rgba(26, 60, 64, 0.95); backdrop-filter: blur(10px); padding: 15px 0; }
+    .navbar-brand img { height: 50px; }
+    .navbar-nav .nav-link { color: var(--light); font-weight: 500; margin: 0 10px; position: relative; }
+    .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active { color: var(--accent); }
+    .navbar-nav .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: 0; left: 0; background-color: var(--accent); transition: width 0.3s ease; }
+    .navbar-nav .nav-link:hover::after, .navbar-nav .nav-link.active::after { width: 100%; }
+    .navbar .btn-user-action { background-color: var(--accent); border: 2px solid var(--accent); color: var(--primary); font-weight: 600; }
+    .navbar .btn-user-action:hover { background-color: transparent; color: var(--accent); }
+
+    .page-header {
+      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') no-repeat center center; /* Service-related image */
+      background-size: cover;
+      padding: 100px 0;
+      color: white;
+      text-align: center;
+    }
+    .page-header h1 { font-size: 3rem; font-weight: 700; }
+
+    .filters-sidebar { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 30px; }
+    .filters-sidebar h4 { color: var(--primary); margin-bottom: 20px; }
+
+    .service-card { border-radius: 10px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-bottom: 30px; transition: all 0.3s ease; height: 100%; display: flex; flex-direction: column; background-color: #fff; }
+    .service-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.12); }
+    .service-image-container { height: 200px; overflow: hidden; position: relative; background-color: #f0f0f0; display:flex; align-items:center; justify-content:center; }
+    .service-image-container img { width: 100%; height: 100%; object-fit: cover; }
+    .service-image-container .default-icon { font-size: 4rem; color: var(--secondary); }
+    .service-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+    .service-header { display: flex; align-items: center; margin-bottom: 10px; }
+    .service-icon { font-size: 1.5rem; color: var(--accent); margin-right: 10px; }
+    .service-title { font-size: 1.3rem; font-weight: 700; color: var(--primary); margin-bottom: 0; }
+    .service-category { font-size: 0.85rem; color: #fff; background-color: var(--secondary); padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; }
+    .service-price { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin-bottom: 15px; }
+    .service-description { font-size: 0.9rem; color: #666; margin-bottom: 20px; line-height: 1.6; flex-grow: 1; }
+    .btn-view-service { background-color: var(--secondary); border: 2px solid var(--secondary); color: white; font-weight: 500; padding: 8px 20px; transition: all 0.3s ease; text-transform: uppercase; font-size: 0.8rem; margin-top: auto; }
+    .btn-view-service:hover { background-color: var(--primary); border-color: var(--primary); color: white; }
+    
+    .loader-container { display: flex; justify-content: center; align-items: center; min-height: 200px; width: 100%;}
+    .loader { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    .noUi-connect { background: var(--secondary); }
+    .noUi-handle { border: 1px solid var(--primary); background: #FFF; box-shadow: none; }
+    #price-slider-values { margin-top: 10px; font-weight: 500; color: var(--primary); }
+
+    .footer { background-color: var(--primary); color: var(--light); padding: 70px 0 0; }
+    .footer-logo img { height: 70px; margin-bottom: 20px; }
+    .footer-text { color: rgba(255,255,255,0.7); margin-bottom: 30px; line-height: 1.7; }
+    .footer-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 25px; color: white; position: relative; }
+    .footer-title::after { content: ''; position: absolute; bottom: -10px; left: 0; width: 40px; height: 2px; background: linear-gradient(to right, var(--accent), var(--gold)); }
+    .footer-links { list-style: none; padding: 0; margin: 0; }
+    .footer-links li { margin-bottom: 12px; }
+    .footer-links a { color: rgba(255,255,255,0.7); text-decoration: none; }
+    .footer-links a:hover { color: var(--accent); padding-left: 5px; }
+    .footer-contact i { color: var(--accent); margin-right: 10px; width: 20px; }
+    .footer-contact p { margin-bottom: 15px; color: rgba(255,255,255,0.7); }
+    .social-links a { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background-color: rgba(255,255,255,0.1); color: white; margin-right: 10px; }
+    .social-links a:hover { background-color: var(--accent); transform: translateY(-5px); }
+    .copyright { text-align: center; padding: 20px 0; margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="index.html"><img src="images/logo.png" alt="LuxeVista Logo"></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="all-rooms.html">Rooms</a></li>
+          <li class="nav-item"><a class="nav-link active" href="all_services.html">Services</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html#contact">Contact</a></li>
+          <li class="nav-item ms-lg-3" id="userAuthLinkContainer">
+             <a class="btn btn-user-action" href="login.html">Login / Register</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <div class="container">
+      <h1 class="animate__animated animate__fadeInDown">Our Exclusive Services</h1>
+      <p class="lead animate__animated animate__fadeInUp animate__delay-0_5s">Discover services designed for your comfort and convenience.</p>
+    </div>
+  </header>
+
+  <main class="container py-5">
+    <div class="row">
+      <aside class="col-lg-3">
+        <div class="filters-sidebar">
+          <h4>Filter Services</h4>
+          <form id="filterServicesForm">
+            <div class="mb-3">
+              <label for="filterServiceKeyword" class="form-label">Keyword</label>
+              <input type="text" class="form-control" id="filterServiceKeyword" name="keyword" placeholder="e.g., Spa, Dining">
+            </div>
+            <div class="mb-3">
+              <label for="filterServiceCategory" class="form-label">Category</label>
+              <input type="text" class="form-control" id="filterServiceCategory" name="category" placeholder="e.g., Wellness">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Max Price</label>
+              <div id="servicePriceRangeSlider"></div>
+              <div id="price-slider-values">$0 - $500+</div>
+              <input type="hidden" id="filterServiceMaxPrice" name="max_price">
+            </div>
+            <button type="submit" class="btn btn-primary w-100" style="background-color: var(--primary); border-color: var(--primary);">Apply Filters</button>
+            <button type="button" class="btn btn-outline-secondary w-100 mt-2" id="resetServiceFilters">Reset Filters</button>
+          </form>
+        </div>
+      </aside>
+
+      <section class="col-lg-9">
+        <div class="row" id="servicesDisplayContainer">
+          <div class="loader-container">
+            <div class="loader"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-3 col-md-6"><div class="footer-logo"><img src="images/logo.png" alt="LuxeVista Logo"></div><p class="footer-text">Experience unparalleled luxury and comfort at LuxeVista.</p><div class="social-links"><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-twitter"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-linkedin-in"></i></a></div></div>
+        <div class="col-lg-3 col-md-6"><h4 class="footer-title">Quick Links</h4><ul class="footer-links"><li><a href="index.html">Home</a></li><li><a href="all-rooms.html">Rooms</a></li><li><a href="all_services.html">Services</a></li><li><a href="index.html#contact">Contact</a></li></ul></div>
+        <div class="col-lg-3 col-md-6"><h4 class="footer-title">Our Services</h4><ul class="footer-links"><li><a href="#">Restaurant & Bar</a></li><li><a href="#">Spa & Wellness</a></li><li><a href="#">Conference Room</a></li></ul></div>
+        <div class="col-lg-3 col-md-6"><h4 class="footer-title">Contact Us</h4><div class="footer-contact"><p><i class="fas fa-map-marker-alt"></i> 123 Luxury Ave, Colombo, Sri Lanka</p><p><i class="fas fa-phone-alt"></i> +94 11 234 5678</p><p><i class="fas fa-envelope"></i> info@luxevista.com</p></div></div>
+      </div>
+    </div>
+    <div class="copyright"><div class="container"><p>&copy; 2025 LuxeVista. All rights reserved.</p></div></div>
+  </footer>
+
+  <!-- Service Booking Modal -->
+  <div class="modal fade" id="serviceBookingModal" tabindex="-1" aria-labelledby="serviceBookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header" style="background-color: var(--primary); color: var(--light);">
+          <h5 class="modal-title" id="serviceBookingModalLabel">Book Service</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="serviceBookingForm">
+            <input type="hidden" id="bookingServiceId" name="service_id">
+            <input type="hidden" id="bookingServiceName" name="service_name">
+            <div class="mb-3">
+              <label class="form-label">Service:</label>
+              <p><strong id="bookingServiceNameDisplay"></strong></p>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Price (Advance Payment):</label>
+              <p><strong id="bookingServicePriceDisplay" class="text-accent"></strong></p>
+              <input type="hidden" id="bookingServicePrice" name="price_at_booking">
+            </div>
+            <div class="mb-3">
+              <label for="bookingUserEmail" class="form-label">Your Email:</label>
+              <input type="email" class="form-control" id="bookingUserEmail" name="user_email" readonly required>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="bookingDate" class="form-label">Booking Date:</label>
+                <input type="date" class="form-control" id="bookingDate" name="booking_date" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="bookingStartTime" class="form-label">Start Time:</label>
+                <input type="time" class="form-control" id="bookingStartTime" name="start_time" required>
+              </div>
+            </div>
+            <h5 class="mt-3 mb-3">Payment Details (Card)</h5>
+            <div class="mb-3"><label for="cardNumber" class="form-label">Card Number</label><input type="text" class="form-control" id="cardNumber" placeholder="---- ---- ---- ----" required></div>
+            <div class="row"><div class="col-md-7 mb-3"><label for="cardExpiry" class="form-label">Expiry Date (MM/YY)</label><input type="text" class="form-control" id="cardExpiry" placeholder="MM/YY" required></div><div class="col-md-5 mb-3"><label for="cardCVV" class="form-label">CVV</label><input type="text" class="form-control" id="cardCVV" placeholder="---" required></div></div>
+            <div id="serviceBookingFormMessage" class="mt-3"></div>
+            <button type="submit" class="btn btn-primary w-100" style="background-color: var(--accent); border-color: var(--accent); color: var(--primary);"><i class="fas fa-calendar-check"></i> Confirm Booking</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const servicesDisplayContainer = document.getElementById('servicesDisplayContainer');
+      const filterServicesForm = document.getElementById('filterServicesForm');
+      const resetServiceFiltersButton = document.getElementById('resetServiceFilters');
+      const priceSliderElement = document.getElementById('servicePriceRangeSlider');
+      const priceSliderValuesDisplay = document.getElementById('price-slider-values');
+      const maxPriceInputHidden = document.getElementById('filterServiceMaxPrice');
+      const serviceBookingModalElement = document.getElementById('serviceBookingModal');
+      let serviceBookingModalInstance = null;
+
+      let currentUserData = null; // To store logged-in user info
+
+      if (priceSliderElement) {
+        noUiSlider.create(priceSliderElement, {
+            start: [500],
+            connect: [true, false],
+            step: 10,
+            range: { 'min': 0, 'max': 500 },
+            format: { to: value => parseInt(value), from: value => parseInt(value) }
+        });
+        priceSliderElement.noUiSlider.on('update', function (values, handle) {
+            const value = parseInt(values[handle]);
+            priceSliderValuesDisplay.innerHTML = `$0 - $${value}${value === 500 ? '+' : ''}`;
+            maxPriceInputHidden.value = value === 500 ? '' : value;
+        });
+      }
+
+      function escapeHTML(str) {
+        if (typeof str !== 'string') return str;
+        return str.replace(/[&<>"']/g, match => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[match]));
+      }
+
+      function fetchAndDisplayServices(params = {}) {
+        servicesDisplayContainer.innerHTML = '<div class="loader-container"><div class="loader"></div></div>';
+        const queryParams = new URLSearchParams(params).toString();
+        
+        fetch(`php/get_services_public.php?${queryParams}`)
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === 'success') {
+              renderServices(data.services);
+            } else {
+              servicesDisplayContainer.innerHTML = `<div class="col-12 text-center alert alert-danger">Failed to load services: ${escapeHTML(data.message)}</div>`;
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching services:', error);
+            servicesDisplayContainer.innerHTML = `<div class="col-12 text-center alert alert-danger">An error occurred while fetching services.</div>`;
+          });
+      }
+
+      function renderServices(services) {
+        servicesDisplayContainer.innerHTML = '';
+        if (services.length === 0) {
+          servicesDisplayContainer.innerHTML = '<div class="col-12 text-center"><p>No services found matching your criteria.</p></div>';
+          return;
+        }
+        services.forEach(service => {
+          const imageHtml = service.image_path 
+            ? `<img src="${escapeHTML(service.image_path)}" alt="${escapeHTML(service.name)}">`
+            : `<i class="fas fa-concierge-bell default-icon"></i>`; // Default icon if no image
+          
+          const iconHtml = service.icon_class ? `<i class="${escapeHTML(service.icon_class)} service-icon"></i>` : '';
+          const priceHtml = service.price !== null ? `<div class="service-price">$${parseFloat(service.price).toFixed(2)}</div>` : '<div class="service-price text-muted">Price on request</div>';
+          const categoryHtml = service.category ? `<div class="service-category">${escapeHTML(service.category)}</div>` : '';
+
+          const card = `
+            <div class="col-md-6 col-lg-4 d-flex align-items-stretch">
+              <div class="service-card" style="width: 100%; height: 100%;">
+                <div class="service-image-container">${imageHtml}</div>
+                <div class="service-content">
+                  <div class="service-header">
+                    ${iconHtml}
+                    <h3 class="service-title">${escapeHTML(service.name)}</h3>
+                  </div>
+                  ${categoryHtml}
+                  ${priceHtml}
+                  <p class="service-description">${escapeHTML(service.description)}</p>
+                  <button class="btn btn-view-service book-service-btn" 
+                          data-bs-toggle="modal" 
+                          data-bs-target="#serviceBookingModal"
+                          data-service-id="${service.service_id}"
+                          data-service-name="${escapeHTML(service.name)}"
+                          data-service-price="${service.price !== null ? parseFloat(service.price).toFixed(2) : '0.00'}">Book Now</button>
+                </div>
+              </div>
+            </div>`;
+          servicesDisplayContainer.insertAdjacentHTML('beforeend', card);
+        });
+      }
+
+      if (filterServicesForm) {
+        filterServicesForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const formData = new FormData(filterServicesForm);
+          const params = {};
+          for (let [key, value] of formData.entries()) {
+            if (value && value !== 'all') {
+                if (key === 'max_price' && (value === '500' || value === '')) { 
+                    // do nothing for max_price if it's the highest or empty
+                } else {
+                    params[key] = value;
+                }
+            }
+          }
+          fetchAndDisplayServices(params);
+        });
+      }
+
+      if (resetServiceFiltersButton) {
+        resetServiceFiltersButton.addEventListener('click', function() {
+          filterServicesForm.reset();
+          if (priceSliderElement) priceSliderElement.noUiSlider.set(500);
+          maxPriceInputHidden.value = '';
+          fetchAndDisplayServices();
+        });
+      }
+
+      fetchAndDisplayServices(); // Initial load
+
+      // User auth link and store user data
+      fetch('php/get_user_info.php')
+        .then(response => response.json())
+        .then(data => {
+            currentUserData = data; // Store for later use
+            const userAuthLinkContainer = document.getElementById('userAuthLinkContainer');
+            if (data.logged_in) {
+                userAuthLinkContainer.innerHTML = `
+                    <span class="navbar-text text-white me-3">Hi, ${escapeHTML(data.user_name.split(' ')[0])}</span>
+                    <a class="btn btn-user-action" href="dashboard.html">Dashboard</a>
+                    <a class="btn btn-user-action ms-2" href="php/logout.php">Logout</a>`;
+            } else {
+                userAuthLinkContainer.innerHTML = '<a class="btn btn-user-action" href="login.html">Login / Register</a>';
+            }
+        }).catch(error => {
+            console.error('Error fetching user status:', error);
+            currentUserData = { logged_in: false }; // Assume not logged in on error
+        });
+
+      // Handle Service Booking Modal
+      if (serviceBookingModalElement) {
+        serviceBookingModalInstance = new bootstrap.Modal(serviceBookingModalElement);
+
+        serviceBookingModalElement.addEventListener('show.bs.modal', function (event) {
+          const button = event.relatedTarget; // Button that triggered the modal
+          const serviceId = button.dataset.serviceId;
+          const serviceName = button.dataset.serviceName;
+          const servicePrice = button.dataset.servicePrice;
+
+          if (!currentUserData || !currentUserData.logged_in) {
+            event.preventDefault(); // Prevent modal from showing
+            alert("You need to be logged in to book a service. Please log in or register.");
+            window.location.href = `login.html?redirect=${encodeURIComponent(window.location.href)}`;
+            return;
+          }
+
+          document.getElementById('bookingServiceId').value = serviceId;
+          document.getElementById('bookingServiceName').value = serviceName;
+          document.getElementById('bookingServiceNameDisplay').textContent = serviceName;
+          document.getElementById('bookingServicePriceDisplay').textContent = `$${servicePrice}`;
+          document.getElementById('bookingServicePrice').value = servicePrice;
+          document.getElementById('bookingUserEmail').value = currentUserData.email;
+          
+          // Set min date for bookingDate to today
+          const today = new Date().toISOString().split('T')[0];
+          document.getElementById('bookingDate').setAttribute('min', today);
+
+          document.getElementById('serviceBookingFormMessage').innerHTML = '';
+          document.getElementById('serviceBookingForm').reset(); // Reset other fields
+          // Re-populate after reset
+          document.getElementById('bookingServiceId').value = serviceId;
+          document.getElementById('bookingUserEmail').value = currentUserData.email;
+        });
+
+        document.getElementById('serviceBookingForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+          const form = this;
+          const formData = new FormData(form);
+          const formMessage = document.getElementById('serviceBookingFormMessage');
+          const submitButton = form.querySelector('button[type="submit"]');
+
+          submitButton.disabled = true;
+          submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+          formMessage.innerHTML = '';
+
+          fetch('php/book_service.php', {
+            method: 'POST',
+            body: formData
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === 'success') {
+              formMessage.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+              setTimeout(() => {
+                serviceBookingModalInstance.hide();
+              }, 2500);
+            } else {
+              formMessage.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+            }
+          })
+          .catch(error => {
+            console.error('Error booking service:', error);
+            formMessage.innerHTML = '<div class="alert alert-danger">An error occurred. Please try again.</div>';
+          })
+          .finally(() => {
+            submitButton.disabled = false;
+            submitButton.innerHTML = '<i class="fas fa-calendar-check"></i> Confirm Booking';
+          });
+        });
+      }
+    });
+  </script>
+</body>
+</html>

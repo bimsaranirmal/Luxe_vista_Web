@@ -141,6 +141,17 @@
             font-size: 0.85em;
             color: #6c757d;
         }
+        .filter-card { /* Added for filter section styling */
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            padding: 20px 25px;
+            margin-bottom: 30px;
+        }
+        .loader-container { /* Added for loading spinner */
+            display: flex; justify-content: center; align-items: center; min-height: 150px; width: 100%;
+        }
+        .loader { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
     </style>
 </head>
 <body>
@@ -200,8 +211,51 @@
         <!-- Existing Promotions Section -->
         <div class="promotions-list-section">
             <h3><i class="fas fa-list-alt"></i> Existing Promotions</h3>
-            <div id="existingPromotionsContainer">
-                <p>Loading existing promotions...</p>
+
+            <!-- Filters Form -->
+            <div class="filter-card my-4">
+                <h5 class="mb-3" style="color: var(--primary);"><i class="fas fa-filter me-2"></i>Filter Promotions</h5>
+                <form id="filterPromotionsForm">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="filterKeyword" class="form-label">Keyword (Title, Desc, Code)</label>
+                            <input type="text" id="filterKeyword" name="keyword" class="form-control form-control-sm" placeholder="e.g., Summer, Discount">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="filterIsActive" class="form-label">Status (Direct)</label>
+                            <select id="filterIsActive" name="is_active_filter" class="form-select form-select-sm">
+                                <option value="all" selected>All</option>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="filterActivityStatus" class="form-label">Activity Status</label>
+                            <select id="filterActivityStatus" name="activity_status" class="form-select form-select-sm">
+                                <option value="all" selected>All</option>
+                                <option value="active_now">Active Now</option>
+                                <option value="upcoming">Upcoming</option>
+                                <option value="expired">Expired</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="filterStartDateAfter" class="form-label">Starts On/After</label>
+                            <input type="date" id="filterStartDateAfter" name="start_date_after" class="form-control form-control-sm">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="filterEndDateBefore" class="form-label">Ends On/Before</label>
+                            <input type="date" id="filterEndDateBefore" name="end_date_before" class="form-control form-control-sm">
+                        </div>
+                        <div class="col-md-12 text-end">
+                            <button type="button" id="applyPromoFiltersBtn" class="btn btn-primary btn-sm"><i class="fas fa-search me-1"></i> Apply</button>
+                            <button type="button" id="resetPromoFiltersBtn" class="btn btn-outline-secondary btn-sm"><i class="fas fa-undo me-1"></i> Reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div id="existingPromotionsContainer" class="row">
+                <div class="col-12 loader-container"><div class="loader"></div></div>
             </div>
         </div>
 
@@ -264,11 +318,17 @@
 
         // Load Existing Promotions
         const existingPromotionsContainer = document.getElementById('existingPromotionsContainer');
+        const filterPromotionsFormEl = document.getElementById('filterPromotionsForm');
+        const applyPromoFiltersBtn = document.getElementById('applyPromoFiltersBtn');
+        const resetPromoFiltersBtn = document.getElementById('resetPromoFiltersBtn');
 
-        function fetchAndRenderPromotions() {
-             existingPromotionsContainer.innerHTML = '<p class="text-center">Loading existing promotions...</p>';
 
-             fetch('php/get_all_promotions.php')
+        function fetchAndRenderPromotions(params = {}) {
+             existingPromotionsContainer.innerHTML = '<div class="col-12 loader-container"><div class="loader"></div></div>';
+
+            const queryParams = new URLSearchParams(params).toString();
+
+             fetch(`php/get_all_promotions.php?${queryParams}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success' && data.promotions) {
@@ -292,6 +352,26 @@
                 });
         }
 
+        if (applyPromoFiltersBtn) {
+            applyPromoFiltersBtn.addEventListener('click', () => {
+                const formData = new FormData(filterPromotionsFormEl);
+                const params = {};
+                for (let [key, value] of formData.entries()) {
+                    if (value) { // Only add if value is not empty
+                        params[key] = value;
+                    }
+                }
+                fetchAndRenderPromotions(params);
+            });
+        }
+
+        if (resetPromoFiltersBtn) {
+            resetPromoFiltersBtn.addEventListener('click', () => {
+                filterPromotionsFormEl.reset();
+                fetchAndRenderPromotions(); // Fetch all
+            });
+        }
+
         function renderPromotions(promotions) {
             existingPromotionsContainer.innerHTML = ''; // Clear loading message
             promotions.forEach(promo => {
@@ -312,12 +392,96 @@
                                 ${promo.promo_code ? `<p><strong>Code:</strong> ${promo.promo_code.replace(/</g, "&lt;")}</p>` : ''}
                                 ${promo.description ? `<p><strong>Description:</strong> ${promo.description.replace(/</g, "&lt;").replace(/\n/g, '<br>')}</p>` : ''}
                                 <p><strong>Validity:</strong> ${startDate} - ${endDate}</p>
-                                <p><strong>Status:</strong> <span class="${statusClass}">${statusText}</span></p>
+                                <p><strong>Status:</strong> <span class="${statusClass}" id="status-promo-${promo.promotion_id}">${statusText}</span></p>
+                            </div>
+                            <div class="card-body border-top pt-2 pb-2">
+                                <button class="btn btn-sm btn-outline-warning me-1 change-status-btn" data-id="${promo.promotion_id}" data-current-status="${promo.is_active}" title="${promo.is_active == 1 ? 'Deactivate' : 'Activate'}">
+                                    <i class="fas ${promo.is_active == 1 ? 'fa-toggle-on' : 'fa-toggle-off'}"></i> ${promo.is_active == 1 ? 'Deactivate' : 'Activate'}
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger delete-promo-btn" data-id="${promo.promotion_id}" title="Delete">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
                             </div>
                             <div class="card-footer text-muted">Created: ${new Date(promo.created_at).toLocaleDateString()}</div>
                         </div>
                     </div>`;
                 existingPromotionsContainer.insertAdjacentHTML('beforeend', promoCardHtml);
+            });
+        }
+
+        // Event delegation for dynamically added buttons
+        existingPromotionsContainer.addEventListener('click', function(event) {
+            const target = event.target.closest('button');
+            if (!target) return;
+
+            const promotionId = target.dataset.id;
+
+            if (target.classList.contains('change-status-btn')) {
+                const currentStatus = target.dataset.currentStatus;
+                handleChangePromotionStatus(promotionId, currentStatus, target);
+            } else if (target.classList.contains('delete-promo-btn')) {
+                handleDeletePromotion(promotionId, target);
+            }
+        });
+
+        function handleChangePromotionStatus(promotionId, currentStatus, buttonElement) {
+            const newStatus = parseInt(currentStatus) === 1 ? 0 : 1;
+            const originalButtonHTML = buttonElement.innerHTML;
+            buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            buttonElement.disabled = true;
+
+            fetch('php/update_promotion_status.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ promotion_id: promotionId, is_active: newStatus })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    fetchAndRenderPromotions(); // Refresh the list
+                } else {
+                    alert('Error changing status: ' + data.message);
+                    buttonElement.innerHTML = originalButtonHTML;
+                    buttonElement.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error changing status:', error);
+                alert('An error occurred while changing status.');
+                buttonElement.innerHTML = originalButtonHTML;
+                buttonElement.disabled = false;
+            });
+        }
+
+        function handleDeletePromotion(promotionId, buttonElement) {
+            if (!confirm(`Are you sure you want to delete promotion ID ${promotionId}? This action cannot be undone.`)) {
+                return;
+            }
+            const originalButtonHTML = buttonElement.innerHTML;
+            buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            buttonElement.disabled = true;
+
+            fetch('php/delete_promotion.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ promotion_id: promotionId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                    fetchAndRenderPromotions(); // Refresh the list
+                } else {
+                    alert('Error deleting promotion: ' + data.message);
+                    buttonElement.innerHTML = originalButtonHTML;
+                    buttonElement.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting promotion:', error);
+                alert('An error occurred while deleting the promotion.');
+                buttonElement.innerHTML = originalButtonHTML;
+                buttonElement.disabled = false;
             });
         }
 

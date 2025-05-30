@@ -241,6 +241,41 @@ require 'php/config.php'; // For any potential future use, though not strictly n
   </div>
 
   <main class="container py-4">
+    <!-- Filters Section -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h5 class="card-title" style="color: var(--primary);"><i class="fas fa-filter me-2"></i>Filter My Bookings</h5>
+        <form id="filterMyBookingsForm">
+          <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+              <label for="filterBookingStatus" class="form-label">Booking Status</label>
+              <select id="filterBookingStatus" name="booking_status_filter" class="form-select form-select-sm">
+                <option value="">All Statuses</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Upcoming">Upcoming</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+                <option value="Pending">Pending</option>
+                <option value="Cancellation Requested">Cancellation Requested</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label for="filterCheckInFrom" class="form-label">Check-in From</label>
+              <input type="date" id="filterCheckInFrom" name="booking_date_from" class="form-control form-control-sm">
+            </div>
+            <div class="col-md-3">
+              <label for="filterCheckInTo" class="form-label">Check-in To</label>
+              <input type="date" id="filterCheckInTo" name="booking_date_to" class="form-control form-control-sm">
+            </div>
+            <div class="col-md-2 text-end">
+              <button type="button" id="applyMyBookingsFiltersBtn" class="btn btn-primary btn-sm w-100 mb-1"><i class="fas fa-search me-1"></i> Apply</button>
+              <button type="button" id="resetMyBookingsFiltersBtn" class="btn btn-outline-secondary btn-sm w-100"><i class="fas fa-undo me-1"></i> Reset</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <div id="bookingsContainer" class="row">
       <!-- Bookings will be loaded here by JavaScript -->
       <div class="col-12 text-center">
@@ -271,15 +306,23 @@ require 'php/config.php'; // For any potential future use, though not strictly n
     document.addEventListener('DOMContentLoaded', function() {
         const bookingsContainer = document.getElementById('bookingsContainer');
         const userAuthLinkContainer = document.getElementById('userAuthLinkContainer');
+        const filterMyBookingsFormEl = document.getElementById('filterMyBookingsForm');
+        const applyMyBookingsFiltersBtn = document.getElementById('applyMyBookingsFiltersBtn');
+        const resetMyBookingsFiltersBtn = document.getElementById('resetMyBookingsFiltersBtn');
 
-        fetch('php/get_user_info.php')
+        function fetchMyBookings(params = {}) {
+            bookingsContainer.innerHTML = `<div class="col-12 text-center"><div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"><span class="visually-hidden">Loading...</span></div><p class="mt-2">Loading your bookings...</p></div>`;
+
+            const queryParams = new URLSearchParams(params).toString();
+
+            fetch(`php/get_user_info.php?${queryParams}`)
             .then(response => response.json())
             .then(data => {
                 if (data.logged_in) {
                     userAuthLinkContainer.innerHTML = `
                         <span class="navbar-text text-white me-3">Hi, ${data.user_name.split(' ')[0]}</span>
                         <a class="btn btn-user-action ms-2" href="php/logout.php">Logout</a>`;
-                    
+
                     if (data.bookings && data.bookings.length > 0) {
                         renderBookings(data.bookings);
                     } else {
@@ -302,6 +345,27 @@ require 'php/config.php'; // For any potential future use, though not strictly n
                 console.error('Error fetching user bookings:', error);
                 bookingsContainer.innerHTML = '<div class="alert alert-danger col-12">Could not load your bookings. Please try again later.</div>';
             });
+        }
+
+        if (applyMyBookingsFiltersBtn) {
+            applyMyBookingsFiltersBtn.addEventListener('click', () => {
+                const formData = new FormData(filterMyBookingsFormEl);
+                const params = {};
+                for (let [key, value] of formData.entries()) {
+                    if (value) { // Only add if value is not empty
+                        params[key] = value;
+                    }
+                }
+                fetchMyBookings(params);
+            });
+        }
+
+        if (resetMyBookingsFiltersBtn) {
+            resetMyBookingsFiltersBtn.addEventListener('click', () => {
+                filterMyBookingsFormEl.reset();
+                fetchMyBookings(); // Fetch all (or default for the user)
+            });
+        }
 
         function renderBookings(bookings) {
             bookingsContainer.innerHTML = ''; // Clear loading spinner
@@ -398,6 +462,9 @@ require 'php/config.php'; // For any potential future use, though not strictly n
                 });
             }
         });
+
+        // Initial load of bookings
+        fetchMyBookings();
     });
   </script>
 </body>
